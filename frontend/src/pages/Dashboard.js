@@ -1,5 +1,4 @@
 import React from "react";
-import logo from '../assets/logo.png';
 import EventManager from "../components/Events/EventManager";
 import './Dashboard.css';
 
