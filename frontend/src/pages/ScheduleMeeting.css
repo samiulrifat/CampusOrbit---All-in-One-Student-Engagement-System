@@ -1,0 +1,80 @@
+.schedule-page {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #d2f1f4; /* soft blue */
+  font-family: Arial, sans-serif;
+}
+
+.schedule-card {
+  background: #fff;
+  padding: 2rem;
+  width: 400px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.schedule-logo {
+  display: block;
+  margin: 0 auto 1rem auto;
+  height: 80px;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #193043;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+label {
+  font-weight: bold;
+  color: #193043;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.schedule-btn {
+  width: 100%;
+  padding: 0.7rem;
+  background-color: #269edc;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.schedule-btn:hover {
+  background-color: #0b76b2;
+}
+
+.error-msg {
+  color: red;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.success-msg {
+  color: green;
+  margin-top: 1rem;
+  text-align: center;
+}

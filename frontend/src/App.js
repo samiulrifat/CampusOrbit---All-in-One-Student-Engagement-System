@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/login';
 import Register from './pages/Register';
+import ScheduleMeeting from './pages/ScheduleMeeting';
 
 // Global CSS (optional, you can keep App.css from CRA)
 import './App.css';
@@ -21,6 +22,8 @@ function App() {
 
         {/* Register page */}
         <Route path="/register" element={<Register />} />
+
+        <Route path="/schedule-meeting" element={<ScheduleMeeting />} /> {/* New */}
       </Routes>
     </Router>
   );
