@@ -10,7 +10,7 @@ import MeetingsList from './pages/MeetingsList';
 import CreatePoll from './pages/CreatePoll';
 import PollsList from './pages/PollsList';
 import EventPage from './pages/EventPage'; // ✅ Imported from the second part
-
+import Dashboard from "./pages/Dashboard";
 // Global CSS (optional, you can keep App.css from CRA)
 import './App.css';
 
@@ -41,6 +41,8 @@ function App() {
 
         {/* ✅ Event Page Route */}
         <Route path="/events/:id" element={<EventPage />} />
+        {/* Dashboard */}
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </Router>
   );
