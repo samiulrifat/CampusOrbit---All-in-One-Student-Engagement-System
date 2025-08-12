@@ -1,0 +1,84 @@
+/* Page background */
+.login-page {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #d2f1f4; /* soft blue background */
+  font-family: Arial, sans-serif;
+}
+
+/* White card container */
+.login-card {
+  background: #ffffff;
+  padding: 2rem;
+  width: 350px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+/* Logo styling */
+.login-logo {
+  height: 80px;
+  margin-bottom: 1rem;
+}
+
+/* Subtitle text */
+.subtitle {
+  color: #555;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Form elements */
+.form-group {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+label {
+  font-weight: bold;
+  color: #193043; /* deep blue text */
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+/* Login button */
+.login-btn {
+  width: 100%;
+  padding: 0.6rem;
+  background-color: #269edc; /* main blue */
+  color: white;
+  border: none;
+  font-weight: bold;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-btn:hover {
+  background-color: #0b76b2; /* darker blue on hover */
+}
+
+/* Error and success messages */
+.error-msg {
+  margin-top: 1rem;
+  color: red;
+  font-size: 0.9rem;
+}
+
+.success-msg {
+  margin-top: 1rem;
+  color: green;
+  font-size: 0.9rem;
+}

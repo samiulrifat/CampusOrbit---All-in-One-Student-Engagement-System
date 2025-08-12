@@ -1,0 +1,77 @@
+.register-page {
+  height: 100vh;
+  background-color: #d2f1f4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, sans-serif;
+}
+
+.register-card {
+  background: #ffffff;
+  padding: 2rem;
+  width: 350px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.register-logo {
+  height: 80px;
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  color: #555;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  text-align: left;
+  margin-bottom: 1rem;
+}
+
+label {
+  font-weight: bold;
+  color: #193043;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+input, select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.register-btn {
+  width: 100%;
+  padding: 0.7rem;
+  background-color: #269edc;
+  color: white;
+  border: none;
+  font-weight: bold;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.register-btn:hover {
+  background-color: #0b76b2;
+}
+
+.error-msg {
+  margin-top: 1rem;
+  color: red;
+  font-size: 0.9rem;
+}
+
+.success-msg {
+  margin-top: 1rem;
+  color: green;
+  font-size: 0.9rem;
+}
