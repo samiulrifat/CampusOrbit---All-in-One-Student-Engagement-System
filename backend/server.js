@@ -21,6 +21,8 @@ app.get('/', (req, res) => {
 
 
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/meetings', require('./routes/meetings'));
+
 
 // ====== START SERVER ======
 const PORT = process.env.PORT || 5000;
