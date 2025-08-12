@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import logo from '../assets/logo.png';
 import './ScheduleMeeting.css';
+import OfficerNav from '../components/OfficerNav';
 
 function ScheduleMeeting() {
   const [title, setTitle] = useState('');
@@ -53,6 +54,7 @@ function ScheduleMeeting() {
     <div className="schedule-page">
       <div className="schedule-card">
         <img src={logo} alt="CampusOrbit Logo" className="schedule-logo" />
+        <OfficerNav />
         <h2>Schedule a Meeting</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">

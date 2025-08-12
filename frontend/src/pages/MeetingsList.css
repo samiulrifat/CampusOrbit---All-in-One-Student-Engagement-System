@@ -1,0 +1,93 @@
+.meetings-page {
+  min-height: 100vh;
+  background-color: #d2f1f4;
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+}
+
+.meetings-card {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  width: 600px;
+}
+
+.meetings-logo {
+  height: 70px;
+  display: block;
+  margin: 0 auto 1rem;
+}
+
+.club-input {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.2rem;
+}
+
+.club-input input {
+  flex: 1;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.club-input button {
+  background-color: #269edc;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.club-input button:hover {
+  background-color: #0b76b2;
+}
+
+.meeting-item {
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.meeting-actions {
+  margin-top: 0.8rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.invite-btn {
+  background-color: #269edc;
+  border: none;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}
+
+.invite-btn:hover {
+  background-color: #0b76b2;
+}
+
+.attend-btn {
+  background-color: #28a745;
+  border: none;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}
+
+.attend-btn:hover {
+  background-color: #1e7e34;
+}
+
+.info-msg {
+  color: #193043;
+  text-align: center;
+  margin-bottom: 1rem;
+}
