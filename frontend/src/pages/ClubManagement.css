@@ -1,0 +1,166 @@
+.club-management-page {
+  min-height: 100vh;
+  background-color: #d2f1f4; /* Soft CampusOrbit blue background */
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+  color: #193043; /* Deep navy blue text */
+}
+
+/* Headings */
+.club-management-page h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.club-management-page h2 {
+  margin-bottom: 0.8rem;
+  font-size: 1.3rem;
+  color: #193043;
+}
+
+.club-management-page h3 {
+  margin-top: 1.5rem;
+  color: #193043;
+  margin-bottom: 0.5rem;
+}
+
+/* Card-like form */
+.club-create-form {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  max-width: 400px;
+  margin: 0 auto 2rem;
+  text-align: center;
+}
+
+.club-create-form input {
+  width: 70%;
+  padding: 0.5rem;
+  margin-right: 0.5rem;
+  border-radius: 6px;
+  border: 1.5px solid #ccc;
+}
+
+.club-create-form button {
+  padding: 0.5rem 1rem;
+  background-color: #269edc;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.club-create-form button:hover {
+  background-color: #0b76b2;
+}
+
+/* Club list */
+.club-list {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  max-width: 500px;
+  margin: 0 auto 2rem;
+}
+
+.club-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid #eee;
+}
+
+.club-item:last-child {
+  border-bottom: none;
+}
+
+.club-item span {
+  cursor: pointer;
+}
+
+.club-item.selected span {
+  font-weight: bold;
+  color: #269edc;
+}
+
+.delete-club-btn {
+  background-color: transparent;
+  border: none;
+  color: red;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.delete-club-btn:hover {
+  color: darkred;
+}
+
+/* Club Details section */
+.club-details {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.invite-member {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.invite-member input {
+  flex: 1;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1.5px solid #ccc;
+  margin-right: 0.5rem;
+}
+
+.invite-member button {
+  background-color: #28a745;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.invite-member button:hover {
+  background-color: #1e7e34;
+}
+
+/* Members list */
+.club-members, .club-invitations {
+  margin-top: 1rem;
+}
+
+.member-item, .invitation-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.member-item:last-child, .invitation-item:last-child {
+  border-bottom: none;
+}
+
+.member-item button {
+  background-color: #e74c3c;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+}
+
+.member-item button:hover {
+  background-color: #c0392b;
+}
