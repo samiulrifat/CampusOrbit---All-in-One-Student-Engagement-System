@@ -5,6 +5,8 @@ import RSVPButton from '../components/Events/RSVPButton';
 import AttendeeList from '../components/Events/AttendeeList';
 import useAuth from '../hooks/useAuth';
 
+import './EventPage.css';
+
 const EventPage = () => {
   const { id: eventId } = useParams();
   const { user } = useAuth();
