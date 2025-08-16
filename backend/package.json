@@ -8,13 +8,13 @@
     "dev": "nodemon server.js",
     "start": "node server.js"
   },
-  
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
     "express": "^5.1.0",
-    "mongoose": "^8.17.1"
+    "mongoose": "^8.17.1",
+    "multer": "^2.0.2"
   }
 }

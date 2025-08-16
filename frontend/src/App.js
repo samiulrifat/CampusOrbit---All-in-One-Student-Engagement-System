@@ -10,6 +10,8 @@ import MeetingsList from './pages/MeetingsList';
 import CreatePoll from './pages/CreatePoll';
 import PollsList from './pages/PollsList';
 import ClubManagement from './pages/ClubManagement';
+import Dashboard from './pages/Dashboard';
+import EventPage from './pages/EventPage';
 
 
 // Global CSS (optional, you can keep App.css from CRA)
@@ -37,6 +39,10 @@ function App() {
         <Route path="/polls" element={<PollsList />} />
         
         <Route path="/clubs/manage" element={<ClubManagement />} />
+
+        <Route path="/dashboard" element={<Dashboard />} />
+
+        <Route path="/events/:id" element={<EventPage />} />
 
         
       </Routes>

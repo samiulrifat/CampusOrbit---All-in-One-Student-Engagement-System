@@ -1,0 +1,51 @@
+/* Container for the event page */
+.container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  color: #333;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+}
+
+/* Heading style */
+h1 {
+  margin-top: 0;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+/* Paragraph styles */
+p {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Margin utilities */
+.mt-4 {
+  margin-top: 1.5rem;
+}
+
+.mt-5 {
+  margin-top: 3rem;
+}
+
+/* Reuse btn styles from global or RSVPButton CSS */
+/* Example button classes: btn, btn-primary, btn-danger, btn-sm, ml-2 */
+
+/* List for attendees */
+ul {
+  padding-left: 0;
+  list-style-type: none;
+}
+
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
