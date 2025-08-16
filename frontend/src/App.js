@@ -9,14 +9,9 @@ import ScheduleMeeting from './pages/ScheduleMeeting';
 import MeetingsList from './pages/MeetingsList';
 import CreatePoll from './pages/CreatePoll';
 import PollsList from './pages/PollsList';
-<<<<<<< HEAD
-import EventPage from './pages/EventPage'; // ✅ Imported from the second part
-import Dashboard from "./pages/Dashboard";
-=======
 import ClubManagement from './pages/ClubManagement';
 
 
->>>>>>> feature-9
 // Global CSS (optional, you can keep App.css from CRA)
 import './App.css';
 
@@ -33,28 +28,17 @@ function App() {
         {/* Register page */}
         <Route path="/register" element={<Register />} />
 
-        {/* Schedule Meeting */}
-        <Route path="/schedule-meeting" element={<ScheduleMeeting />} />
+        <Route path="/schedule-meeting" element={<ScheduleMeeting />} /> 
 
-        {/* Meetings List */}
-        <Route path="/meetings" element={<MeetingsList />} />
+        <Route path="/meetings" element={<MeetingsList />} /> 
 
-        {/* Create Poll */}
         <Route path="/create-poll" element={<CreatePoll />} />
 
-        {/* Polls List */}
         <Route path="/polls" element={<PollsList />} />
         
         <Route path="/clubs/manage" element={<ClubManagement />} />
 
-<<<<<<< HEAD
-        {/* ✅ Event Page Route */}
-        <Route path="/events/:id" element={<EventPage />} />
-        {/* Dashboard */}
-        <Route path="/dashboard" element={<Dashboard />} />
-=======
         
->>>>>>> feature-9
       </Routes>
     </Router>
   );
