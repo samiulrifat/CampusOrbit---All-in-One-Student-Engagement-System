@@ -23,14 +23,8 @@ app.get('/', (req, res) => {
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/meetings', require('./routes/meetings'));
 app.use('/api/polls', require('./routes/polls'));
-<<<<<<< HEAD
-app.use("/api/events", require("./routes/event"));
-app.use('/api/announcements', require('./routes/events'));
-app.use("/uploads", express.static("uploads"));
-=======
 app.use('/api/clubs', require('./routes/clubs'));
 
->>>>>>> feature-9
 
 
 // ====== START SERVER ======
