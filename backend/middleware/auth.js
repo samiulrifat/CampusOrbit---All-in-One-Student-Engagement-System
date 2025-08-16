@@ -1,4 +1,5 @@
-// backend/middleware/auth.js
+// middleware/auth.js
+
 const jwt = require('jsonwebtoken');
 const Club = require('../models/Club');
 
@@ -42,4 +43,12 @@ async function requireOfficer(req, res, next) {
   }
 }
 
-module.exports = { verifyToken, requireOfficer };
+// New middleware to check if user role is organizer
+function requireOrganizer(req, res, next) {
+  if (!req.user || req.user.role !== 'organizer') {
+    return res.status(403).json({ error: 'Access denied: organizer role required' });
+  }
+  next();
+}
+
+module.exports = { verifyToken, requireOfficer, requireOrganizer };

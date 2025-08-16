@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
-console.log({ createEvent });
+
 
 const {
   getEvents,
@@ -11,6 +11,8 @@ const {
   deleteEvent,
   uploadEventPhotos,
 } = require('../controllers/eventController');
+
+console.log({ createEvent });
 
 const Event = require('../models/Event');
 const { verifyToken, requireOrganizer } = require('../middleware/auth');
@@ -26,7 +28,6 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// ===== Event CRUD Routes =====
 
 // Get all events
 router.get('/', getEvents);
