@@ -6,6 +6,7 @@ const connectDB = require('./config/database');
 const authRoutes = require('./routes/auth');
 const resourceRoutes = require('./routes/resources');
 const path = require('path');
+const achievementRoutes = require('./routes/achievements');
 
 
 
@@ -31,6 +32,7 @@ app.use('/api/polls', require('./routes/polls'));
 app.use('/api/clubs', require('./routes/clubs'));
 app.use('/api/events', require('./routes/events'));
 app.use('/api/resources', resourceRoutes);
+app.use('/api/achievements', achievementRoutes);
 
 app.use('/uploads/resources', express.static(path.join(__dirname, 'uploads/resources')));
 

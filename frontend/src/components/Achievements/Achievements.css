@@ -1,0 +1,72 @@
+.achievement-list {
+  list-style: none;
+  padding-left: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+}
+
+.achievement-item {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 1rem;
+  width: 250px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.achievement-icon {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
+.achievement-content strong {
+  display: block;
+  font-size: 1.1rem;
+  margin-bottom: 0.3rem;
+}
+
+.award-form {
+  margin-bottom: 2rem;
+  background: #f5f8fa;
+  padding: 1.3rem 1.5rem;
+  border-radius: 8px;
+  max-width: 400px;
+}
+
+.award-form label {
+  display: block;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.award-form select {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.3rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.award-form button {
+  background-color: #3498db;
+  border: none;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.award-form button:hover:not(:disabled) {
+  background-color: #2c80b4;
+}
+
+.award-form button:disabled {
+  background-color: #a0c6f8;
+  cursor: not-allowed;
+}
