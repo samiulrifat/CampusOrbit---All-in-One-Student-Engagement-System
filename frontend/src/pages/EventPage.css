@@ -227,3 +227,81 @@ li button.btn-danger {
   align-items: center;
   justify-content: space-between;
 }
+
+/* Sponsorship Request Form styling */
+.card {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #2e3a59;
+}
+
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+  font-weight: 700;
+  font-size: 1.8rem;
+}
+
+/* Form elements inside card */
+.card label {
+  font-weight: 600;
+  display: block;
+  margin-top: 1rem;
+  margin-bottom: 0.4rem;
+  color: #34495e;
+}
+
+.card input[type="text"],
+.card input[type="number"],
+.card textarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db; /* light gray */
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #2e3a59;
+  resize: vertical;
+}
+
+.card input[type="text"]:focus,
+.card input[type="number"]:focus,
+.card textarea:focus {
+  outline: none;
+  border-color: #3498db; /* bright blue focus */
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+.card button.btn-primary {
+  margin-top: 1.5rem;
+  font-weight: 700;
+  border-radius: 6px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  background-color: #3498db;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border: none;
+}
+
+.card button.btn-primary:hover:not(:disabled) {
+  background-color: #2874a6;
+}
+
+/* Status message for form submission */
+.hint {
+  margin-top: 0.8rem;
+  font-size: 1rem;
+  color: #34495e;
+  font-weight: 600;
+}
+
+/* Additional spacing for EventPage sections */
+.mt-5 > .card {
+  margin-bottom: 3rem;
+}

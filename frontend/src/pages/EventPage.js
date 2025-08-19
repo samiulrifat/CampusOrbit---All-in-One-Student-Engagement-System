@@ -3,9 +3,10 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import RSVPButton from '../components/Events/RSVPButton';
 import AttendeeList from '../components/Events/AttendeeList';
-import { useAuth } from '../context/AuthProvider'; // Ensure you import from context
+import { useAuth } from '../context/AuthProvider';
 
-import NotificationBell from '../components/NotificationBell'; // <== New import
+import NotificationBell from '../components/NotificationBell';
+import SponsorshipRequestForm from '../components/SponsorshipRequestForm'; // New import
 
 import './EventPage.css';
 
@@ -45,27 +46,33 @@ const EventPage = () => {
 
   const isOrganizer = ['organizer', 'club_admin', 'admin'].includes(user.role);
 
-  console.log('Current user:', user);
-  console.log('Is Organizer:', isOrganizer);
-  console.log('Event attendees:', event?.attendees);
-
   return (
     <div className="container mt-4">
 
-      {/* Added NotificationBell inside a topbar container for layout */}
+      {/* Top bar with event title and notification bell */}
       <div className="topbar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1>{event.title}</h1>
         <NotificationBell />
       </div>
 
+      {/* Event description and date */}
       <p>{event.description}</p>
       <p>
         <strong>Date: </strong>
         {new Date(event.date).toLocaleString()}
       </p>
 
+      {/* RSVP button */}
       <RSVPButton eventId={eventId} currentUser={user} />
 
+      {/* Sponsorship Request Form for organizers/admins */}
+      {isOrganizer && (
+        <div className="mt-5">
+          <SponsorshipRequestForm eventId={eventId} />
+        </div>
+      )}
+
+      {/* Attendee list for organizers/admins */}
       {isOrganizer && (
         <div className="mt-5">
           <AttendeeList eventId={eventId} />
