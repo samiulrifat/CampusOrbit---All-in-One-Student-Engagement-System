@@ -49,7 +49,7 @@ const EventList = ({ events, onDelete, onEdit }) => {
             )}
 
             <div style={{ marginTop: "10px" }}>
-              <button onClick={() => onEdit(e)} className="save-button" style={{ marginRight: "5px" }}>Edit</button>
+              <button onClick={() => {console.log('Edit clicked for event ID:', e._id); onEdit(e);}} className="save-button" style={{ marginRight: "5px" }}>Edit</button>
               <button onClick={() => onDelete(e._id)} className="save-button" style={{ background: "#ef5350" }}>Delete</button>
             </div>
           </div>

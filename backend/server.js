@@ -8,7 +8,7 @@ const resourceRoutes = require('./routes/resources');
 const path = require('path');
 const achievementRoutes = require('./routes/achievements');
 const announcementsRoutes = require('./routes/announcements');
-
+const notificationsRouter = require('./routes/notifications');
 
 
 const app = express();
@@ -35,7 +35,7 @@ app.use('/api/events', require('./routes/events'));
 app.use('/api/resources', resourceRoutes);
 app.use('/api/achievements', achievementRoutes);
 app.use('/api/announcements', announcementsRoutes);
-
+app.use('/api/notifications', notificationsRouter);
 app.use('/uploads/resources', express.static(path.join(__dirname, 'uploads/resources')));
 
 

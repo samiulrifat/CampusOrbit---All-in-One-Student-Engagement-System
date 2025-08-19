@@ -1,5 +1,6 @@
 const Event = require("../models/Event");
 const Club = require("../models/Club"); // Needed to check club admin
+const { notifyEventChange } = require('../utils/notifyEventChange');
 
 // Helper to check if user is the club admin of the event
 const isClubAdmin = async (userId, event) => {
@@ -49,7 +50,7 @@ exports.createEvent = async (req, res) => {
   }
 };
 
-// UPDATE event with validation including clubId
+// UPDATE event with validation including clubId, plus notify attendees on changed fields
 exports.updateEvent = async (req, res) => {
   const { title, date, location, description, clubId } = req.body;
   if (!title || !date || !location || !clubId) {
@@ -57,17 +58,27 @@ exports.updateEvent = async (req, res) => {
   }
 
   try {
-    const updatedEvent = await Event.findByIdAndUpdate(
-      req.params.id,
-      { title, date, location, description, clubId },
-      { new: true, runValidators: true }
+    const current = await Event.findById(req.params.id);
+    if (!current) return res.status(404).json({ message: "Event not found" });
+
+    const before = current.toObject();
+
+    current.title = title;
+    current.date = date;
+    current.location = location;
+    current.description = description;
+    current.clubId = clubId;
+
+    await current.save();
+
+    const changed = ['title','date','location','description'].filter(
+      f => String(before[f]) !== String(current[f])
     );
 
-    if (!updatedEvent) {
-      return res.status(404).json({ message: "Event not found" });
-    }
+    // Notify attendees about event changes asynchronously
+    notifyEventChange(current._id, changed).catch(console.error);
 
-    res.status(200).json(updatedEvent);
+    res.status(200).json(current);
   } catch (err) {
     console.error("Error updating event:", err);
     res.status(500).json({ message: "Server error while updating event" });
@@ -107,7 +118,6 @@ exports.uploadEventPhotos = async (req, res) => {
     res.status(500).json({ message: "Failed to upload photos" });
   }
 };
-
 
 // =======================
 // New functionality below
@@ -174,4 +184,3 @@ exports.removeAttendee = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-

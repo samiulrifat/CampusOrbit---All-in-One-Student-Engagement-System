@@ -5,6 +5,8 @@ import RSVPButton from '../components/Events/RSVPButton';
 import AttendeeList from '../components/Events/AttendeeList';
 import { useAuth } from '../context/AuthProvider'; // Ensure you import from context
 
+import NotificationBell from '../components/NotificationBell'; // <== New import
+
 import './EventPage.css';
 
 const EventPage = () => {
@@ -25,15 +27,15 @@ const EventPage = () => {
     axios.get(`/api/events/${eventId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
-    .then(res => {
-      setEvent(res.data);
-      setLoading(false);
-    })
-    .catch(err => {
-      console.error('Failed to load event:', err);
-      setError('Failed to load event. Please try again.');
-      setLoading(false);
-    });
+      .then(res => {
+        setEvent(res.data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to load event:', err);
+        setError('Failed to load event. Please try again.');
+        setLoading(false);
+      });
   }, [eventId]);
 
   if (loading || userLoading) return <p>Loading...</p>;
@@ -49,7 +51,13 @@ const EventPage = () => {
 
   return (
     <div className="container mt-4">
-      <h1>{event.title}</h1>
+
+      {/* Added NotificationBell inside a topbar container for layout */}
+      <div className="topbar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1>{event.title}</h1>
+        <NotificationBell />
+      </div>
+
       <p>{event.description}</p>
       <p>
         <strong>Date: </strong>
