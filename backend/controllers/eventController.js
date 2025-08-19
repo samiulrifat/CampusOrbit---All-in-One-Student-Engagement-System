@@ -1,6 +1,6 @@
 const Event = require("../models/Event");
 
-// GET all events sorted by date (ascending)
+// GET all events sorted by date ascending
 exports.getEvents = async (req, res) => {
   try {
     const events = await Event.find().sort({ date: 1 });
@@ -11,15 +11,15 @@ exports.getEvents = async (req, res) => {
   }
 };
 
-// CREATE event with required validation
+// CREATE event with validation including clubId
 exports.createEvent = async (req, res) => {
-  const { title, date, location, description } = req.body;
-  if (!title || !date || !location) {
-    return res.status(400).json({ message: "Title, date, and location are required" });
+  const { title, date, location, description, clubId } = req.body;
+  if (!title || !date || !location || !clubId) {
+    return res.status(400).json({ message: "Title, date, location and clubId are required" });
   }
 
   try {
-    const newEvent = new Event({ title, date, location, description, photos: [] });
+    const newEvent = new Event({ title, date, location, description, clubId, photos: [] });
     const savedEvent = await newEvent.save();
     res.status(201).json(savedEvent);
   } catch (err) {
@@ -28,17 +28,17 @@ exports.createEvent = async (req, res) => {
   }
 };
 
-// UPDATE event with validation and options to return updated doc
+// UPDATE event with validation including clubId
 exports.updateEvent = async (req, res) => {
-  const { title, date, location, description } = req.body;
-  if (!title || !date || !location) {
-    return res.status(400).json({ message: "Title, date, and location are required" });
+  const { title, date, location, description, clubId } = req.body;
+  if (!title || !date || !location || !clubId) {
+    return res.status(400).json({ message: "Title, date, location and clubId are required" });
   }
 
   try {
     const updatedEvent = await Event.findByIdAndUpdate(
       req.params.id,
-      { title, date, location, description },
+      { title, date, location, description, clubId },
       { new: true, runValidators: true }
     );
 
@@ -67,7 +67,7 @@ exports.deleteEvent = async (req, res) => {
   }
 };
 
-// UPLOAD event photos; expects multer middleware to populate req.files
+// UPLOAD event photos; expects multer middleware for req.files
 exports.uploadEventPhotos = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
@@ -75,10 +75,8 @@ exports.uploadEventPhotos = async (req, res) => {
       return res.status(404).json({ message: "Event not found" });
     }
 
-    // Map uploaded file paths to URLs
     const fileUrls = req.files.map(file => `http://localhost:5000/uploads/${file.filename}`);
 
-    // Append new photos to existing array
     event.photos = event.photos.concat(fileUrls);
     await event.save();
 

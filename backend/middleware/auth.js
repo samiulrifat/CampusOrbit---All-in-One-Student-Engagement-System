@@ -1,5 +1,3 @@
-// middleware/auth.js
-
 const jwt = require('jsonwebtoken');
 const Club = require('../models/Club');
 
@@ -15,7 +13,7 @@ function verifyToken(req, res, next) {
   const token = authHeader.split(' ')[1];
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded; // decoded will have userId, role etc.
+    req.user = decoded; // decoded contains userId, role, etc.
     next();
   } catch (err) {
     return res.status(401).json({ error: 'Invalid or expired token' });
@@ -25,12 +23,15 @@ function verifyToken(req, res, next) {
 // Check if user is officer/admin of a given club
 async function requireOfficer(req, res, next) {
   try {
-    const clubId = req.params.id || req.body.clubId;
+    // clubId can come from route params or request body
+    const clubId = req.params.clubId || req.params.id || req.body.clubId;
+    console.log('requireOfficer middleware - clubId:', clubId, 'userId:', req.user?.userId);
     if (!clubId) return res.status(400).json({ error: 'Club ID is required' });
 
     const club = await Club.findById(clubId);
     if (!club) return res.status(404).json({ error: 'Club not found' });
 
+    // Check if user is member and has role officer or admin
     const member = club.members.find(m => m.userId.toString() === req.user.userId);
     if (!member || !['officer', 'admin'].includes(member.role)) {
       return res.status(403).json({ error: 'Access denied: not officer/admin' });
@@ -43,7 +44,7 @@ async function requireOfficer(req, res, next) {
   }
 }
 
-// New middleware to check if user role is organizer
+// (Optional) Retain requireOrganizer in case you have other routes needing this role
 function requireOrganizer(req, res, next) {
   if (!req.user || req.user.role !== 'organizer') {
     return res.status(403).json({ error: 'Access denied: organizer role required' });

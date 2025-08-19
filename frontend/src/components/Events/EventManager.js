@@ -3,33 +3,54 @@ import EventList from "./EventList";
 import EventForm from "./EventForm";
 import "./Events.css";
 
-const API_URL = "/api/events"; // Use proxy in package.json!
+const API_URL = "/api/events";
 
 const EventManager = () => {
   const [events, setEvents] = useState([]);
   const [editingEvent, setEditingEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const token = localStorage.getItem("token"); // JWT from login
 
-  // Standard auth headers for protected backend endpoints
-  const authHeaders = token
-    ? { Authorization: `Bearer ${token}` }
-    : {};
+  const [clubs, setClubs] = useState([]);
+  const [selectedClubId, setSelectedClubId] = useState("");
 
+  const token = localStorage.getItem("token");
+  const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
+
+  // Fetch user clubs whenever component mounts
   useEffect(() => {
-    fetchEvents();
+    fetchUserClubs();
     // eslint-disable-next-line
   }, []);
 
-  // Fetch
+  // Fetch events when selectedClubId changes
+  useEffect(() => {
+    if (selectedClubId) {
+      fetchEvents();
+    } else {
+      setEvents([]); // clear events if no club selected
+    }
+    // eslint-disable-next-line
+  }, [selectedClubId]);
+
+  const fetchUserClubs = async () => {
+    try {
+      const res = await fetch("/api/clubs/user", { headers: authHeaders });
+      if (!res.ok) throw new Error("Failed to fetch clubs");
+      const data = await res.json();
+      console.log("Fetched clubs:", data);
+      setClubs(data);
+      if (data.length) setSelectedClubId(data[0]._id);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   const fetchEvents = async () => {
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch(API_URL, {
-        headers: authHeaders,
-      });
+      const res = await fetch(`${API_URL}?clubId=${selectedClubId}`, { headers: authHeaders });
       if (!res.ok) throw new Error("Failed to fetch events");
       const data = await res.json();
       setEvents(data);
@@ -40,16 +61,21 @@ const EventManager = () => {
     }
   };
 
-  // CREATE
   const addEvent = async (event, photos) => {
     try {
       setError(null);
+      if (!selectedClubId) throw new Error("Please select a club");
+      const eventWithClub = { ...event, clubId: selectedClubId };
+
       const res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json", ...authHeaders },
-        body: JSON.stringify(event),
+        body: JSON.stringify(eventWithClub),
       });
-      if (!res.ok) throw new Error("Failed to add event");
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.message || "Failed to add event");
+      }
       const newEvent = await res.json();
 
       if (photos && photos.length) {
@@ -71,16 +97,21 @@ const EventManager = () => {
     }
   };
 
-  // UPDATE
   const editEvent = async (event, photos) => {
     try {
       setError(null);
+      if (!selectedClubId) throw new Error("Please select a club");
+      const eventWithClub = { ...event, clubId: selectedClubId };
+
       const res = await fetch(`${API_URL}/${event._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", ...authHeaders },
-        body: JSON.stringify(event),
+        body: JSON.stringify(eventWithClub),
       });
-      if (!res.ok) throw new Error("Failed to update event");
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.message || "Failed to update event");
+      }
       const updatedEvent = await res.json();
 
       if (photos && photos.length) {
@@ -96,16 +127,13 @@ const EventManager = () => {
           updatedEvent.photos = uploadData.photos;
         }
       }
-      setEvents(prev =>
-        prev.map(e => (e._id === updatedEvent._id ? updatedEvent : e))
-      );
+      setEvents(prev => prev.map(e => (e._id === updatedEvent._id ? updatedEvent : e)));
       setEditingEvent(null);
     } catch (err) {
       setError(err.message);
     }
   };
 
-  // DELETE
   const deleteEvent = async (id) => {
     try {
       setError(null);
@@ -123,7 +151,21 @@ const EventManager = () => {
   return (
     <div className="event-manager">
       <h2>Manage CampusOrbit Events</h2>
-      {error && <p style={{ color: "red" }}>Error: {error}</p>}
+      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+
+      <label>
+        Select Club:
+        <select
+          value={selectedClubId}
+          onChange={e => setSelectedClubId(e.target.value)}
+          style={{ margin: "10px 0", padding: "6px" }}
+        >
+          <option value="">-- Select a club --</option>
+          {clubs.map(club => (
+            <option key={club._id} value={club._id}>{club.name}</option>
+          ))}
+        </select>
+      </label>
 
       <EventForm
         onSubmit={editingEvent ? editEvent : addEvent}
@@ -131,9 +173,11 @@ const EventManager = () => {
         onCancel={() => setEditingEvent(null)}
       />
 
-      {loading ? <p>Loading events...</p>
-        : <EventList events={events} onDelete={deleteEvent} onEdit={setEditingEvent} />
-      }
+      {loading ? (
+        <p>Loading events...</p>
+      ) : (
+        <EventList events={events} onDelete={deleteEvent} onEdit={setEditingEvent} />
+      )}
     </div>
   );
 };

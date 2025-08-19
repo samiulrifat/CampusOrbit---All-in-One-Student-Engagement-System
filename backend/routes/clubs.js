@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const Club = require('../models/Club');
+
 const {
   createClub,
   getClubs,
@@ -13,7 +15,17 @@ const {
 
 const { verifyToken, requireOfficer } = require('../middleware/auth');
 
-// ===== Club Routes ===== //
+// Authenticated user can get list of clubs they belong to
+router.get('/user', verifyToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const clubs = await Club.find({ 'members.userId': userId }).select('_id name');
+    res.json(clubs);
+  } catch (err) {
+    console.error('Error fetching clubs for user:', err);
+    res.status(500).json({ error: 'Server error fetching clubs' });
+  }
+});
 
 // Public: list all clubs
 router.get('/', getClubs);
