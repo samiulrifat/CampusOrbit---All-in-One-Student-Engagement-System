@@ -15,17 +15,21 @@ const {
 
 const { verifyToken, requireOfficer } = require('../middleware/auth');
 
-// Authenticated user can get list of clubs they belong to
+
+// Authenticated user can get list of clubs they have created (are admins of)
 router.get('/user', verifyToken, async (req, res) => {
   try {
+    console.log('Logged in userId:', req.user.userId);
     const userId = req.user.userId;
-    const clubs = await Club.find({ 'members.userId': userId }).select('_id name');
+    const clubs = await Club.find({ creatorId: userId }).select('_id name');
+    console.log('Clubs returned:', clubs);
     res.json(clubs);
   } catch (err) {
     console.error('Error fetching clubs for user:', err);
     res.status(500).json({ error: 'Server error fetching clubs' });
   }
 });
+
 
 // Public: list all clubs
 router.get('/', getClubs);

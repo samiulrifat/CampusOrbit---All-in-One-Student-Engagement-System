@@ -17,34 +17,34 @@ const EventManager = () => {
   const token = localStorage.getItem("token");
   const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
 
-  // Fetch user clubs whenever component mounts
+  // Fetch user clubs on mount
   useEffect(() => {
     fetchUserClubs();
     // eslint-disable-next-line
   }, []);
 
-  // Fetch events when selectedClubId changes
+  // Fetch events every time selected club changes
   useEffect(() => {
     if (selectedClubId) {
       fetchEvents();
     } else {
-      setEvents([]); // clear events if no club selected
+      setEvents([]);
     }
     // eslint-disable-next-line
   }, [selectedClubId]);
 
-  const fetchUserClubs = async () => {
-    try {
-      const res = await fetch("/api/clubs/user", { headers: authHeaders });
-      if (!res.ok) throw new Error("Failed to fetch clubs");
-      const data = await res.json();
-      console.log("Fetched clubs:", data);
-      setClubs(data);
-      if (data.length) setSelectedClubId(data[0]._id);
-    } catch (err) {
-      setError(err.message);
-    }
-  };
+const fetchUserClubs = async () => {
+  try {
+    const res = await fetch("/api/clubs/user", { headers: authHeaders });
+    if (!res.ok) throw new Error("Failed to fetch clubs");
+    const data = await res.json();
+    console.log("Fetched clubs at frontend:", data);
+    setClubs(data);
+    if (data.length) setSelectedClubId(data[0]._id);
+  } catch (err) {
+    setError(err.message);
+  }
+};
 
   const fetchEvents = async () => {
     try {
@@ -80,7 +80,7 @@ const EventManager = () => {
 
       if (photos && photos.length) {
         const fd = new FormData();
-        photos.forEach(photo => fd.append("photos", photo));
+        photos.forEach((photo) => fd.append("photos", photo));
         const uploadRes = await fetch(`${API_URL}/${newEvent._id}/photos`, {
           method: "POST",
           headers: authHeaders,
@@ -91,7 +91,7 @@ const EventManager = () => {
           newEvent.photos = uploadData.photos;
         }
       }
-      setEvents(prev => [...prev, newEvent]);
+      setEvents((prev) => [...prev, newEvent]);
     } catch (err) {
       setError(err.message);
     }
@@ -116,7 +116,7 @@ const EventManager = () => {
 
       if (photos && photos.length) {
         const fd = new FormData();
-        photos.forEach(photo => fd.append("photos", photo));
+        photos.forEach((photo) => fd.append("photos", photo));
         const uploadRes = await fetch(`${API_URL}/${updatedEvent._id}/photos`, {
           method: "POST",
           headers: authHeaders,
@@ -127,7 +127,7 @@ const EventManager = () => {
           updatedEvent.photos = uploadData.photos;
         }
       }
-      setEvents(prev => prev.map(e => (e._id === updatedEvent._id ? updatedEvent : e)));
+      setEvents((prev) => prev.map((e) => (e._id === updatedEvent._id ? updatedEvent : e)));
       setEditingEvent(null);
     } catch (err) {
       setError(err.message);
@@ -142,7 +142,7 @@ const EventManager = () => {
         headers: authHeaders,
       });
       if (!res.ok) throw new Error("Failed to delete event");
-      setEvents(prev => prev.filter(e => e._id !== id));
+      setEvents((prev) => prev.filter((e) => e._id !== id));
     } catch (err) {
       setError(err.message);
     }
@@ -151,33 +151,27 @@ const EventManager = () => {
   return (
     <div className="event-manager">
       <h2>Manage CampusOrbit Events</h2>
-      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+      {error && <p style={{ color: "red" }}>Error: {error}</p>}
 
       <label>
         Select Club:
         <select
           value={selectedClubId}
-          onChange={e => setSelectedClubId(e.target.value)}
+          onChange={(e) => setSelectedClubId(e.target.value)}
           style={{ margin: "10px 0", padding: "6px" }}
         >
           <option value="">-- Select a club --</option>
-          {clubs.map(club => (
-            <option key={club._id} value={club._id}>{club.name}</option>
+          {clubs.map((club) => (
+            <option key={club._id} value={club._id}>
+              {club.name}
+            </option>
           ))}
         </select>
       </label>
 
-      <EventForm
-        onSubmit={editingEvent ? editEvent : addEvent}
-        event={editingEvent}
-        onCancel={() => setEditingEvent(null)}
-      />
+      <EventForm onSubmit={editingEvent ? editEvent : addEvent} event={editingEvent} onCancel={() => setEditingEvent(null)} />
 
-      {loading ? (
-        <p>Loading events...</p>
-      ) : (
-        <EventList events={events} onDelete={deleteEvent} onEdit={setEditingEvent} />
-      )}
+      {loading ? <p>Loading events...</p> : <EventList events={events} onDelete={deleteEvent} onEdit={setEditingEvent} />}
     </div>
   );
 };
