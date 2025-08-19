@@ -15,6 +15,7 @@ import PollsList from './pages/PollsList';
 import ClubManagement from './pages/ClubManagement';
 import Dashboard from './pages/Dashboard';
 import EventPage from './pages/EventPage';
+import ClubWorkspace from './pages/ClubWorkspace';
 
 // Global CSS
 import './App.css';
@@ -35,6 +36,8 @@ function App() {
           <Route path="/clubs/manage" element={<ClubManagement />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/events/:id" element={<EventPage />} />
+          <Route path="/clubs/:clubId/workspace" element={<ClubWorkspace />} />
+
         </Routes>
       </Router>
     </AuthProvider>

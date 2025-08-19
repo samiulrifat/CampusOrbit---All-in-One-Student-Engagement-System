@@ -44,6 +44,28 @@ async function requireOfficer(req, res, next) {
   }
 }
 
+// Check if user is a member of the club
+async function isClubMember(req, res, next) {
+  try {
+    const clubId = req.params.clubId || req.params.id || req.body.clubId;
+    if (!clubId) return res.status(400).json({ error: 'Club ID is required' });
+
+    const club = await Club.findById(clubId);
+    if (!club) return res.status(404).json({ error: 'Club not found' });
+
+    // Check if user is in club members list
+    const isMember = club.members.some(m => m.userId.toString() === req.user.userId);
+    if (!isMember) {
+      return res.status(403).json({ error: 'Access denied: not a club member' });
+    }
+
+    next();
+  } catch (err) {
+    console.error('Authorization error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
+
 // (Optional) Retain requireOrganizer in case you have other routes needing this role
 function requireOrganizer(req, res, next) {
   if (!req.user || req.user.role !== 'organizer') {
@@ -52,4 +74,4 @@ function requireOrganizer(req, res, next) {
   next();
 }
 
-module.exports = { verifyToken, requireOfficer, requireOrganizer };
+module.exports = { verifyToken, requireOfficer, requireOrganizer, isClubMember };

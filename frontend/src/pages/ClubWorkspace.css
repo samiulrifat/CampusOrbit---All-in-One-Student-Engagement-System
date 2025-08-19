@@ -1,0 +1,123 @@
+.club-workspace {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem 2rem;
+  background-color: #f5f7fa; /* Light grey-blue background */
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+.club-title {
+  color: #2c3e50; /* Darker blue-gray text */
+  font-weight: 700;
+  font-size: 2.4rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 3px solid #3498db; /* Bright blue underline */
+  padding-bottom: 0.3rem;
+}
+
+.club-subtitle {
+  font-size: 1.05rem;
+  color: #555;
+  margin-bottom: 2rem;
+}
+
+/* UploadResource form styles */
+.club-workspace form {
+  background: white;
+  border-radius: 6px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  margin-bottom: 2rem;
+}
+
+.club-workspace form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #34495e;
+}
+
+.club-workspace form input[type="text"],
+.club-workspace form input[type="url"],
+.club-workspace form select,
+.club-workspace form input[type="file"] {
+  width: 100%;
+  padding: 0.45rem 0.6rem;
+  border: 1.5px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  margin-bottom: 1rem;
+  transition: border-color 0.25s ease;
+}
+
+.club-workspace form input[type="text"]:focus,
+.club-workspace form input[type="url"]:focus,
+.club-workspace form select:focus,
+.club-workspace form input[type="file"]:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+/* Buttons */
+.club-workspace button {
+  background-color: #3498db;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 5px;
+  padding: 0.65rem 1.4rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.club-workspace button:hover:enabled {
+  background-color: #227dc7;
+}
+
+.club-workspace button:disabled {
+  background-color: #a0c6f8;
+  cursor: not-allowed;
+}
+
+/* ResourceList styles */
+.club-workspace ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.club-workspace li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: white;
+  border-radius: 6px;
+  margin-bottom: 0.8rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+}
+
+.club-workspace a {
+  color: #2980b9;
+  font-weight: 500;
+  text-decoration: none;
+  word-break: break-word;
+}
+
+.club-workspace a:hover {
+  text-decoration: underline;
+}
+
+.club-workspace li button {
+  background-color: #e74c3c; /* Red */
+  padding: 0.45rem 0.8rem;
+  font-size: 0.9rem;
+}
+
+.club-workspace li button:hover {
+  background-color: #c0392b;
+}

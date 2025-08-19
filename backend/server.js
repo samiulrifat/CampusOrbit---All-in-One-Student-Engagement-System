@@ -4,6 +4,10 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/database'); 
 const authRoutes = require('./routes/auth');
+const resourceRoutes = require('./routes/resources');
+const path = require('path');
+
+
 
 const app = express();
 
@@ -26,7 +30,9 @@ app.use('/api/meetings', require('./routes/meetings'));
 app.use('/api/polls', require('./routes/polls'));
 app.use('/api/clubs', require('./routes/clubs'));
 app.use('/api/events', require('./routes/events'));
+app.use('/api/resources', resourceRoutes);
 
+app.use('/uploads/resources', express.static(path.join(__dirname, 'uploads/resources')));
 
 
 // ====== START SERVER ======
