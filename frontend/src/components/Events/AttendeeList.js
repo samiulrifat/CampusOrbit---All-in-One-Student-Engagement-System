@@ -16,6 +16,7 @@ const AttendeeList = ({ eventId }) => {
   }, [eventId, token]);
 
   const removeAttendee = async (userId) => {
+    if (!window.confirm('Are you sure you want to remove this attendee?')) return;
     try {
       await axios.delete(`/api/events/${eventId}/attendees/${userId}`, {
         headers: { Authorization: `Bearer ${token}` }

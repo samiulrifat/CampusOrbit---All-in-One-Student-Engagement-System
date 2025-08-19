@@ -3,24 +3,49 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import RSVPButton from '../components/Events/RSVPButton';
 import AttendeeList from '../components/Events/AttendeeList';
-import useAuth from '../hooks/useAuth';
+import { useAuth } from '../context/AuthProvider'; // Ensure you import from context
 
 import './EventPage.css';
 
 const EventPage = () => {
   const { id: eventId } = useParams();
-  const { user } = useAuth();
+  const { user, loading: userLoading } = useAuth();
   const [event, setEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get(`/api/events/${eventId}`)
-      .then(res => setEvent(res.data))
-      .catch(console.error);
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('You must be logged in to view event details.');
+      setLoading(false);
+      return;
+    }
+
+    axios.get(`/api/events/${eventId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(res => {
+      setEvent(res.data);
+      setLoading(false);
+    })
+    .catch(err => {
+      console.error('Failed to load event:', err);
+      setError('Failed to load event. Please try again.');
+      setLoading(false);
+    });
   }, [eventId]);
 
-  if (!event) {
-    return <p>Loading event…</p>;
-  }
+  if (loading || userLoading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
+  if (!user) return <p>Please log in to view event details.</p>;
+  if (!event) return <p>No event found.</p>;
+
+  const isOrganizer = ['organizer', 'club_admin', 'admin'].includes(user.role);
+
+  console.log('Current user:', user);
+  console.log('Is Organizer:', isOrganizer);
+  console.log('Event attendees:', event?.attendees);
 
   return (
     <div className="container mt-4">
@@ -33,7 +58,7 @@ const EventPage = () => {
 
       <RSVPButton eventId={eventId} currentUser={user} />
 
-      {user.role === 'organizer' && (
+      {isOrganizer && (
         <div className="mt-5">
           <AttendeeList eventId={eventId} />
         </div>

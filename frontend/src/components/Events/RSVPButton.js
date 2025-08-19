@@ -3,10 +3,10 @@ import axios from 'axios';
 
 const RSVPButton = ({ eventId, currentUser }) => {
   const [isAttending, setIsAttending] = useState(false);
-  const token = localStorage.getItem('token'); // Retrieve JWT token
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
-    if (!token) return; // No token means not logged in
+    if (!token || !currentUser?.id) return;  // Added optional chaining here
     axios.get(`/api/events/${eventId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
@@ -15,22 +15,23 @@ const RSVPButton = ({ eventId, currentUser }) => {
         setIsAttending(attendees.some(user => user._id === currentUser.id));
       })
       .catch(console.error);
-  }, [eventId, currentUser.id, token]);
+  }, [eventId, currentUser, token]);
 
   const toggleRSVP = async () => {
+    if (!currentUser?.id) return;  // Defensive check
     try {
       const res = await axios.post(`/api/events/${eventId}/rsvp`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const attendees = res.data.attendees || [];
-      setIsAttending(attendees.some(userId => userId === currentUser.id));
+      setIsAttending(attendees.some(userId => userId.toString() === currentUser.id));
     } catch (err) {
       console.error(err);
     }
   };
 
   return (
-    <button onClick={toggleRSVP} className="btn btn-primary">
+    <button onClick={toggleRSVP} className="btn btn-primary" disabled={!token || !currentUser}>
       {isAttending ? 'Cancel RSVP' : 'RSVP'}
     </button>
   );
