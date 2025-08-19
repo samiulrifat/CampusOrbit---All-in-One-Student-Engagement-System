@@ -96,7 +96,7 @@ exports.uploadEventPhotos = async (req, res) => {
       return res.status(404).json({ message: "Event not found" });
     }
 
-    const fileUrls = req.files.map(file => `http://localhost:5000/uploads/${file.filename}`);
+    const fileUrls = req.files.map(file => `http://localhost:5000/uploadsphoto/${file.filename}`);
 
     event.photos = event.photos.concat(fileUrls);
     await event.save();

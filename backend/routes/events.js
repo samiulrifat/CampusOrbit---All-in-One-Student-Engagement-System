@@ -10,7 +10,7 @@ const { verifyToken, requireOfficer, requireOrganizer } = require('../middleware
 // Multer setup for event photo uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    cb(null, 'uploadsphoto/'); //age uploads chilo
   },
   filename: (req, file, cb) => {
     cb(null, `${req.params.id}-${Date.now()}${path.extname(file.originalname)}`);
@@ -19,9 +19,16 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+//Upload photos for event by ID (max 5 photos)
+router.post('/:id/photos', verifyToken, requireOfficer, upload.array('photos', 5), eventController.uploadEventPhotos);
+
+
 // Debug logs (placed after imports)
 console.log('verifyToken:', verifyToken);
 console.log('toggleRSVP:', eventController.toggleRSVP);
+console.log('uploadEventPhotos', eventController.uploadEventPhotos);
+
+
 
 // GET all events sorted by date ascending
 router.get('/', eventController.getEvents);
@@ -48,6 +55,6 @@ router.put('/:id', verifyToken, requireOfficer, eventController.updateEvent);
 router.delete('/:id', verifyToken, requireOfficer, eventController.deleteEvent);
 
 // UPLOAD photos for event (only officer/admin)
-router.post('/:id/photos', verifyToken, requireOfficer, upload.array('photos', 5), eventController.uploadEventPhotos);
+router.post('/:id/photos', verifyToken, upload.array('photos', 5), eventController.uploadEventPhotos);
 
 module.exports = router;
