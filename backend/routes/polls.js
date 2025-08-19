@@ -1,23 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const Poll = require('../models/Poll');
+const { verifyToken } = require('../middleware/auth');
 
-// ✅ Create a new poll
-router.post('/', async (req, res) => {
+// ✅ Create a new poll (protected route)
+router.post('/', verifyToken, async (req, res) => {
   try {
-    const { clubId, creatorId, question, options } = req.body;
+    const { clubId, question, options } = req.body;
+    const creatorId = req.user.userId || req.user._id;
 
     if (!clubId || !creatorId || !question || !options || options.length < 2) {
       return res.status(400).json({ error: 'Please provide clubId, creatorId, question, and at least 2 options' });
     }
 
-    const formattedOptions = options.map(opt => ({ text: opt }));
-
+    // Options are already formatted as { text: '...' } by frontend
     const poll = new Poll({
       clubId,
       creatorId,
       question,
-      options: formattedOptions
+      options
     });
 
     await poll.save();

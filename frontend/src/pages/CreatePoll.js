@@ -6,17 +6,16 @@ function CreatePoll() {
   const [question, setQuestion] = useState('');
   const [options, setOptions] = useState(['', '']);
   const [clubId, setClubId] = useState('');
-  const [creatorId, setCreatorId] = useState('');
+  const [clubs, setClubs] = useState([]);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  // Auto-fill IDs from logged-in user (if persisted in localStorage)
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user) {
-      setClubId(user.clubId);
-      setCreatorId(user.id);
-    }
+    // Fetch all clubs for club selection dropdown
+    fetch('http://localhost:5000/api/clubs')
+      .then(res => res.json())
+      .then(setClubs)
+      .catch(() => setClubs([]));
   }, []);
 
   const handleOptionChange = (value, index) => {
@@ -40,21 +39,39 @@ function CreatePoll() {
     setError('');
     setMessage('');
 
+    // Basic client-side validation
+    if (!clubId || !question.trim() || options.filter(opt => opt.trim()).length < 2) {
+      setError('Please provide club, question, and at least two options.');
+      return;
+    }
+
     try {
+      const token = localStorage.getItem('token');  // Assuming JWT token stored here for auth
+
       const res = await fetch('http://localhost:5000/api/polls', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clubId, creatorId, question, options })
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          clubId,
+          question,
+          options: options.map(opt => ({ text: opt })) // Options as objects with text keys
+        })
       });
 
       const data = await res.json();
+
       if (!res.ok) {
         setError(data.error || 'Failed to create poll');
         return;
       }
+
       setMessage('Poll created successfully!');
       setQuestion('');
       setOptions(['', '']);
+      setClubId('');
     } catch (err) {
       setError('Something went wrong: ' + err.message);
     }
@@ -67,11 +84,21 @@ function CreatePoll() {
         <h2>Create a Poll</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
+            <label>Club</label>
+            <select value={clubId} onChange={e => setClubId(e.target.value)} required>
+              <option value="">Select a club</option>
+              {clubs.map(club => (
+                <option key={club._id} value={club._id}>{club.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
             <label>Question</label>
             <input
               type="text"
               value={question}
-              onChange={(e) => setQuestion(e.target.value)}
+              onChange={e => setQuestion(e.target.value)}
               placeholder="Enter poll question"
               required
             />
@@ -84,7 +111,7 @@ function CreatePoll() {
                 <input
                   type="text"
                   value={opt}
-                  onChange={(e) => handleOptionChange(e.target.value, idx)}
+                  onChange={e => handleOptionChange(e.target.value, idx)}
                   placeholder={`Option ${idx + 1}`}
                   required
                 />
@@ -93,9 +120,9 @@ function CreatePoll() {
                 )}
               </div>
             ))}
-            <button 
-              type="button" 
-              className="add-btn" 
+            <button
+              type="button"
+              className="add-btn"
               onClick={addOption}
             >
               + Add Option
