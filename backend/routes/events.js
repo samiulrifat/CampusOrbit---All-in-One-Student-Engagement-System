@@ -10,7 +10,7 @@ const { verifyToken, requireOfficer, requireOrganizer } = require('../middleware
 // Multer setup for event photo uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploadsphoto/'); //age uploads chilo
+    cb(null, 'uploadsphoto/'); // uploads folder
   },
   filename: (req, file, cb) => {
     cb(null, `${req.params.id}-${Date.now()}${path.extname(file.originalname)}`);
@@ -19,16 +19,13 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-//Upload photos for event by ID (max 5 photos)
+// Upload photos for event by ID (max 5 photos)
 router.post('/:id/photos', verifyToken, requireOfficer, upload.array('photos', 5), eventController.uploadEventPhotos);
-
 
 // Debug logs (placed after imports)
 console.log('verifyToken:', verifyToken);
 console.log('toggleRSVP:', eventController.toggleRSVP);
 console.log('uploadEventPhotos', eventController.uploadEventPhotos);
-
-
 
 // GET all events sorted by date ascending
 router.get('/', eventController.getEvents);
@@ -54,7 +51,34 @@ router.put('/:id', verifyToken, requireOfficer, eventController.updateEvent);
 // DELETE event by ID (only officer/admin)
 router.delete('/:id', verifyToken, requireOfficer, eventController.deleteEvent);
 
-// UPLOAD photos for event (only officer/admin)
-router.post('/:id/photos', verifyToken, upload.array('photos', 5), eventController.uploadEventPhotos);
+// NEW: GET filtered events for calendar view
+router.get('/filter', async (req, res) => {
+  try {
+    const { category, startDate, endDate, clubId } = req.query;
+
+    const filter = {};
+
+    if (category) {
+      filter.category = category;
+    }
+    if (clubId) {
+      filter.clubId = clubId;
+    }
+    if (startDate || endDate) {
+      filter.date = {};
+      if (startDate) filter.date.$gte = new Date(startDate);
+      if (endDate) filter.date.$lte = new Date(endDate);
+    }
+
+    const events = await eventController.Event.find(filter)
+      .sort({ date: 1 })
+      .populate('clubId', 'name');
+
+    res.status(200).json(events);
+  } catch (err) {
+    console.error('Error fetching filtered events:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 module.exports = router;
