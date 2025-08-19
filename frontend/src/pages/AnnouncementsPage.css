@@ -1,0 +1,78 @@
+.announcements-page-container {
+  background: #fff;
+  padding: 1.5rem 2rem;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #2e3a59;
+}
+
+.announcement-item {
+  border-bottom: 1px solid #ddd;
+  padding: 1rem 0;
+}
+
+.announcement-item h3 {
+  margin: 0 0 0.3rem 0;
+  color: #333;
+}
+
+.announcement-item p {
+  font-size: 1rem;
+  line-height: 1.4;
+  margin: 0 0 0.5rem 0;
+}
+
+.announcement-item small {
+  color: #777;
+  font-style: italic;
+  font-size: 0.85rem;
+}
+
+button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover:not(:disabled) {
+  background-color: #2c80b4;
+}
+
+button:disabled {
+  background-color: #a0c6f8;
+  cursor: not-allowed;
+}
+
+textarea, input[type="text"] {
+  width: 100%;
+  padding: 0.65rem;
+  margin: 0.4rem 0 1rem 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.delete-btn {
+  background-color: transparent;
+  border: none;
+  color: #e74c3c;
+  font-weight: bold;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 0.3rem;
+  text-decoration: underline;
+}
+
+.delete-btn:hover {
+  color: #c0392b;
+}

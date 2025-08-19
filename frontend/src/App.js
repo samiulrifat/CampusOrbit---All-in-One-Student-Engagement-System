@@ -17,6 +17,8 @@ import Dashboard from './pages/Dashboard';
 import EventPage from './pages/EventPage';
 import ClubWorkspace from './pages/ClubWorkspace';
 import AchievementsPage from './pages/AchievementsPage';
+import AnnouncementsPage from './pages/AnnouncementsPage';
+
 
 // Global CSS
 import './App.css';
@@ -39,6 +41,8 @@ function App() {
           <Route path="/events/:id" element={<EventPage />} />
           <Route path="/clubs/:clubId/workspace" element={<ClubWorkspace />} />
           <Route path="/clubs/:clubId/achievements" element={<AchievementsPage />} />
+          <Route path="/clubs/:clubId/announcements" element={<AnnouncementsPage />} />
+
 
         </Routes>
       </Router>
