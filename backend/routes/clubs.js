@@ -30,6 +30,13 @@ router.get('/user', verifyToken, async (req, res) => {
   }
 });
 
+//calendar component needs this to populate club filter dropdown
+router.get('/', async (req, res) => {
+  const clubs = await Club.find({}, 'name');
+  res.json(clubs);
+});
+
+
 
 // Public: list all clubs
 router.get('/', getClubs);

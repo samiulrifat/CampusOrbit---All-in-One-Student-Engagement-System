@@ -21,6 +21,34 @@ exports.getEvents = async (req, res) => {
   }
 };
 
+// New function to get filtered events, including location
+exports.getFilteredEvents = async (req, res) => {
+  try {
+    const { category, startDate, endDate, clubId } = req.query;
+
+    const filter = {};
+    if (category) filter.category = category;
+    if (clubId) filter.clubId = clubId;
+    if (startDate || endDate) {
+      filter.date = {};
+      if (startDate) filter.date.$gte = new Date(startDate);
+      if (endDate) filter.date.$lte = new Date(endDate);
+    }
+
+    // Query with explicit fields including location
+    const events = await Event.find(filter)
+      .select('title date location category clubId')
+      .populate('clubId', 'name')
+      .sort({ date: 1 });
+
+    res.status(200).json(events);
+  } catch (err) {
+    console.error("Error fetching filtered events:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
 // GET event by ID (populate attendees)
 exports.getEventById = async (req, res) => {
   try {

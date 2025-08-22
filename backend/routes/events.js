@@ -50,4 +50,7 @@ router.delete('/:id', verifyToken, requireOfficer, eventController.deleteEvent);
 // UPLOAD photos for event (only officer/admin)
 router.post('/:id/photos', verifyToken, requireOfficer, upload.array('photos', 5), eventController.uploadEventPhotos);
 
+// NEW: Filtered events endpoint calling controller method
+router.get('/filter', eventController.getFilteredEvents);
+
 module.exports = router;
