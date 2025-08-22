@@ -18,6 +18,7 @@ import EventPage from './pages/EventPage';
 import ClubWorkspace from './pages/ClubWorkspace';
 import AchievementsPage from './pages/AchievementsPage';
 import AnnouncementsPage from './pages/AnnouncementsPage';
+import EventCalendar from './components/Events/EventCalendar';
 
 
 // Global CSS
@@ -42,7 +43,8 @@ function App() {
           <Route path="/clubs/:clubId/workspace" element={<ClubWorkspace />} />
           <Route path="/clubs/:clubId/achievements" element={<AchievementsPage />} />
           <Route path="/clubs/:clubId/announcements" element={<AnnouncementsPage />} />
-
+          <Route path="/calendar" element={<EventCalendar />} />
+        
 
         </Routes>
       </Router>
