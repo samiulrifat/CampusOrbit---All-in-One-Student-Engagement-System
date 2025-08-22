@@ -10,7 +10,7 @@ const { verifyToken, requireOfficer, requireOrganizer } = require('../middleware
 // Multer setup for event photo uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    cb(null, 'uploads/eventphotos');
   },
   filename: (req, file, cb) => {
     cb(null, `${req.params.id}-${Date.now()}${path.extname(file.originalname)}`);

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import PhotoGallery from '../components/Events/PhotoGallery';
+import PhotoUploadForm from '../components/Events/PhotoUploadForm';
 import RSVPButton from '../components/Events/RSVPButton';
 import AttendeeList from '../components/Events/AttendeeList';
 import { useAuth } from '../context/AuthProvider';
@@ -46,6 +48,11 @@ const EventPage = () => {
 
   const isOrganizer = ['organizer', 'club_admin', 'admin'].includes(user.role);
 
+    // Update event photos state on successful photo upload
+  const handleUploadSuccess = (newPhotos) => {
+    setEvent(prev => ({ ...prev, photos: newPhotos }));
+  };
+
   return (
     <div className="container mt-4">
 
@@ -72,11 +79,16 @@ const EventPage = () => {
         </div>
       )}
 
-      {/* Attendee list for organizers/admins */}
-      {isOrganizer && (
-        <div className="mt-5">
-          <AttendeeList eventId={eventId} />
-        </div>
+      <h2>Event Photos</h2>
+      <PhotoGallery photos={event.photos || []} />
+      {user && (
+        <>
+          <PhotoUploadForm eventId={eventId} onUploadSuccess={handleUploadSuccess} />
+        
+          <div className="mt-5">
+            <AttendeeList eventId={eventId} />
+          </div>
+        </>
       )}
     </div>
   );

@@ -38,6 +38,8 @@ app.use('/api/announcements', announcementsRoutes);
 app.use('/api/notifications', notificationsRouter);
 app.use('/uploads/resources', express.static(path.join(__dirname, 'uploads/resources')));
 app.use('/api/sponsorships', sponsorshipRouter);
+app.use('/uploads/eventphotos', express.static(path.join(__dirname, 'uploads/eventphotos')));
+
 
 // ====== START SERVER ======
 const PORT = process.env.PORT || 5000;

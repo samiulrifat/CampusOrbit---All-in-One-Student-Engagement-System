@@ -99,7 +99,6 @@ exports.deleteEvent = async (req, res) => {
   }
 };
 
-// UPLOAD event photos; expects multer middleware for req.files
 exports.uploadEventPhotos = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);

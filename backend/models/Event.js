@@ -6,7 +6,8 @@ const eventSchema = new mongoose.Schema({
   location:    { type: String, default: '' },
   description: { type: String, default: '' },
   clubId:      { type: mongoose.Schema.Types.ObjectId, ref: 'Club', required: true },
-  attendees:   [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
-}, { timestamps: true });
+  attendees:   [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  photos : { type: [String], default: [] }
+},{ timestamps: true });
 
 module.exports = mongoose.model('Event', eventSchema);
