@@ -5,10 +5,10 @@ import PhotoGallery from '../components/Events/PhotoGallery';
 import PhotoUploadForm from '../components/Events/PhotoUploadForm';
 import RSVPButton from '../components/Events/RSVPButton';
 import AttendeeList from '../components/Events/AttendeeList';
-import { useAuth } from '../context/AuthProvider';
+import useAuth from '../hooks/useAuth';
 
 import NotificationBell from '../components/NotificationBell';
-import SponsorshipRequestForm from '../components/SponsorshipRequestForm'; // New import
+import SponsorshipRequestForm from '../components/SponsorshipRequestForm';
 
 import './EventPage.css';
 
@@ -46,9 +46,9 @@ const EventPage = () => {
   if (!user) return <p>Please log in to view event details.</p>;
   if (!event) return <p>No event found.</p>;
 
-  const isOrganizer = ['organizer', 'club_admin', 'admin'].includes(user.role);
+  const isOrganizer = user.role === 'clubAdmin';
 
-    // Update event photos state on successful photo upload
+  // Update event photos state on successful photo upload
   const handleUploadSuccess = (newPhotos) => {
     setEvent(prev => ({ ...prev, photos: newPhotos }));
   };
@@ -72,7 +72,7 @@ const EventPage = () => {
       {/* RSVP button */}
       <RSVPButton eventId={eventId} currentUser={user} />
 
-      {/* Sponsorship Request Form for organizers/admins */}
+      {/* Sponsorship Request Form available only to club admins */}
       {isOrganizer && (
         <div className="mt-5">
           <SponsorshipRequestForm eventId={eventId} />
@@ -81,10 +81,11 @@ const EventPage = () => {
 
       <h2>Event Photos</h2>
       <PhotoGallery photos={event.photos || []} />
+
       {user && (
         <>
           <PhotoUploadForm eventId={eventId} onUploadSuccess={handleUploadSuccess} />
-        
+
           <div className="mt-5">
             <AttendeeList eventId={eventId} />
           </div>

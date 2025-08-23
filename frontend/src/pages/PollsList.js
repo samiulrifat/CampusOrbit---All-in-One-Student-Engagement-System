@@ -1,23 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import logo from '../assets/logo.png';
+import { AuthContext } from '../context/AuthProvider';
 import './PollsList.css';
 
 function PollsList() {
   const [polls, setPolls] = useState([]);
   const [clubId, setClubId] = useState('');
   const [message, setMessage] = useState('');
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
     if (user) {
       setClubId(user.clubId);
       fetchPolls(user.clubId);
     }
-  }, []);
+  }, [user]);
 
   const fetchPolls = async (clubId) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/polls/${clubId}`);
+      const res = await fetch(`http://localhost:5000/api/polls/${clubId}`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
       const data = await res.json();
       setPolls(data);
     } catch (err) {
@@ -29,7 +32,10 @@ function PollsList() {
     try {
       const res = await fetch(`http://localhost:5000/api/polls/${pollId}/vote`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
         body: JSON.stringify({ optionIndex })
       });
       const data = await res.json();
@@ -41,10 +47,17 @@ function PollsList() {
   };
 
   const closePoll = async (pollId) => {
+    if (user.role !== 'clubAdmin') {
+      setMessage('Only club admins can close polls');
+      return;
+    }
     try {
       const res = await fetch(`http://localhost:5000/api/polls/${pollId}/close`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
       });
       const data = await res.json();
       setMessage(data.message || data.error);
@@ -71,8 +84,8 @@ function PollsList() {
                   <li key={idx}>
                     {opt.text} — {opt.votes} votes
                     {poll.isOpen && (
-                      <button 
-                        className="vote-btn" 
+                      <button
+                        className="vote-btn"
                         onClick={() => vote(poll._id, idx)}
                       >
                         Vote
@@ -82,7 +95,9 @@ function PollsList() {
                 ))}
               </ul>
               {poll.isOpen ? (
-                <button className="close-btn" onClick={() => closePoll(poll._id)}>Close Poll</button>
+                user.role === 'clubAdmin' && (
+                  <button className="close-btn" onClick={() => closePoll(poll._id)}>Close Poll</button>
+                )
               ) : (
                 <p className="closed-msg">Poll Closed</p>
               )}

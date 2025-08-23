@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import logo from '../assets/logo.png';
+import { AuthContext } from '../context/AuthProvider';
 import './CreatePoll.css';
 
 function CreatePoll() {
@@ -9,14 +10,25 @@ function CreatePoll() {
   const [clubs, setClubs] = useState([]);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
+    if (!user || !user.role || user.role !== 'club_admin') {
+      setError('Access denied: only club admins can create polls.');
+      return;
+    }
+    // Fetch all clubs for club selection dropdown
     // Fetch all clubs for club selection dropdown
     fetch('http://localhost:5000/api/clubs')
-      .then(res => res.json())
-      .then(setClubs)
-      .catch(() => setClubs([]));
-  }, []);
+     .then(res => res.json())
+     .then(data => {
+    // Filter clubs where creatorId matches current user _id
+       const filteredClubs = data.filter(club => club.creatorId === user._id);
+       setClubs(filteredClubs);
+     })
+     .catch(() => setClubs([]));
+  }, [user]);
+  
 
   const handleOptionChange = (value, index) => {
     const newOptions = [...options];
@@ -39,6 +51,11 @@ function CreatePoll() {
     setError('');
     setMessage('');
 
+    if (!user || user.role !== 'club_admin') {
+      setError('Access denied.');
+      return;
+    }
+
     // Basic client-side validation
     if (!clubId || !question.trim() || options.filter(opt => opt.trim()).length < 2) {
       setError('Please provide club, question, and at least two options.');
@@ -46,7 +63,7 @@ function CreatePoll() {
     }
 
     try {
-      const token = localStorage.getItem('token');  // Assuming JWT token stored here for auth
+      const token = localStorage.getItem('token'); // Assuming JWT token stored here for auth
 
       const res = await fetch('http://localhost:5000/api/polls', {
         method: 'POST',
@@ -76,6 +93,10 @@ function CreatePoll() {
       setError('Something went wrong: ' + err.message);
     }
   };
+
+  if (!user || user.role !== 'club_admin') {
+    return <p style={{ color: 'red', textAlign: 'center', marginTop: '20px' }}>Access denied: only club admins can create polls.</p>;
+  }
 
   return (
     <div className="poll-page">

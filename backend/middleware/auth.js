@@ -20,18 +20,38 @@ function verifyToken(req, res, next) {
   }
 }
 
-// Check if user is officer/admin of a given club
+// Role-based access middleware
+// Accepts array of allowedRoles (e.g. ['student', 'clubAdmin'])
+// Treat 'organizer' as alias for 'clubAdmin'
+function requireRole(allowedRoles) {
+  return (req, res, next) => {
+    if (!req.user || !req.user.role) {
+      return res.status(403).json({ error: 'Forbidden: No user role found' });
+    }
+
+    // Normalize organizer role to clubAdmin for this check
+    let userRole = req.user.role;
+    if (userRole === 'organizer') {
+      userRole = 'clubAdmin';
+    }
+
+    if (!allowedRoles.includes(userRole)) {
+      return res.status(403).json({ error: 'Forbidden: insufficient permissions' });
+    }
+
+    next();
+  };
+}
+
+// Check if user is officer/admin of a club
 async function requireOfficer(req, res, next) {
   try {
-    // clubId can come from route params or request body
     const clubId = req.params.clubId || req.params.id || req.body.clubId;
-    console.log('requireOfficer middleware - clubId:', clubId, 'userId:', req.user?.userId);
     if (!clubId) return res.status(400).json({ error: 'Club ID is required' });
 
     const club = await Club.findById(clubId);
     if (!club) return res.status(404).json({ error: 'Club not found' });
 
-    // Check if user is member and has role officer or admin
     const member = club.members.find(m => m.userId.toString() === req.user.userId);
     if (!member || !['officer', 'admin'].includes(member.role)) {
       return res.status(403).json({ error: 'Access denied: not officer/admin' });
@@ -44,7 +64,7 @@ async function requireOfficer(req, res, next) {
   }
 }
 
-// Check if user is a member of the club
+// Check if user is member of a club
 async function isClubMember(req, res, next) {
   try {
     const clubId = req.params.clubId || req.params.id || req.body.clubId;
@@ -53,7 +73,6 @@ async function isClubMember(req, res, next) {
     const club = await Club.findById(clubId);
     if (!club) return res.status(404).json({ error: 'Club not found' });
 
-    // Check if user is in club members list
     const isMember = club.members.some(m => m.userId.toString() === req.user.userId);
     if (!isMember) {
       return res.status(403).json({ error: 'Access denied: not a club member' });
@@ -66,12 +85,10 @@ async function isClubMember(req, res, next) {
   }
 }
 
-// (Optional) Retain requireOrganizer in case you have other routes needing this role
-function requireOrganizer(req, res, next) {
-  if (!req.user || req.user.role !== 'organizer') {
-    return res.status(403).json({ error: 'Access denied: organizer role required' });
-  }
-  next();
-}
-
-module.exports = { verifyToken, requireOfficer, requireOrganizer, isClubMember };
+// Export middleware functions
+module.exports = {
+  verifyToken,
+  requireRole,
+  requireOfficer,
+  isClubMember,
+};

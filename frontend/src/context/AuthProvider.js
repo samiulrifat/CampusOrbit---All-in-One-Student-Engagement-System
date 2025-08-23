@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
-const AuthContext = createContext(null);
+export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Fetch authenticated user on mount, using stored token
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -19,7 +20,7 @@ export const AuthProvider = ({ children }) => {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(res => {
-      setUser(res.data);
+      setUser(res.data); // Must include user info with role!
       setLoading(false);
     })
     .catch(() => {
@@ -28,11 +29,10 @@ export const AuthProvider = ({ children }) => {
     });
   }, []);
 
+  // Expose user, setUser (for login/logout), and loading state
   return (
     <AuthContext.Provider value={{ user, setUser, loading }}>
       {children}
     </AuthContext.Provider>
   );
 };
-
-export const useAuth = () => useContext(AuthContext);

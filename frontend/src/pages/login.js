@@ -1,23 +1,25 @@
-import React, { useState } from 'react';
-import logo from '../assets/logo.png'; // adjust path if needed
-import './Login.css'; // we'll create this CSS file
+import React, { useState, useContext } from 'react';
+import logo from '../assets/logo.png';
+import './Login.css';
+import { AuthContext } from '../context/AuthProvider';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const { setUser } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setSuccess('');
 
     try {
       const res = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
@@ -28,9 +30,10 @@ function Login() {
       }
 
       localStorage.setItem('token', data.token);
-      setSuccess('Login successful!');
-      setEmail('');
-      setPassword('');
+      setUser(data.user); // user={name, email, role}
+      console.log('User logged in:', data.user);
+      navigate('/user-dashboard');
+      console.log('Navigation called');
     } catch (err) {
       setError('Something went wrong');
     }
@@ -65,11 +68,12 @@ function Login() {
             />
           </div>
 
-          <button type="submit" className="login-btn">Login</button>
+          <button type="submit" className="login-btn">
+            Login
+          </button>
         </form>
 
         {error && <p className="error-msg">{error}</p>}
-        {success && <p className="success-msg">{success}</p>}
       </div>
     </div>
   );
