@@ -20,7 +20,7 @@ const AwardAchievement = ({ clubId, onAward }) => {
       .then(res => setAchievements(res.data))
       .catch(err => console.error('Failed to load achievements:', err));
 
-    // Fetch club members (assumes API exists)
+    // Fetch club members
     axios.get(`/api/clubs/${clubId}/members`, {
       headers: { Authorization: `Bearer ${token}` }
     })
@@ -58,41 +58,45 @@ const AwardAchievement = ({ clubId, onAward }) => {
   if (loading) return <p>Loading form...</p>;
 
   return (
-    <form onSubmit={handleSubmit} className="award-form">
-      <h3>Award Achievement</h3>
+    <div>
+      <div>
+        <form onSubmit={handleSubmit} className="award-form">
+          <h3>Award Achievement</h3>
 
-      <label>
-        Select Achievement:
-        <select
-          value={selectedAchievement}
-          onChange={e => setSelectedAchievement(e.target.value)}
-          required
-        >
-          <option value="">-- Select achievement --</option>
-          {achievements.map(a => (
-            <option key={a._id} value={a._id}>{a.title}</option>
-          ))}
-        </select>
-      </label>
+          <div className="form-group">
+            <label>Select Achievement:</label>
+            <select
+              value={selectedAchievement}
+              onChange={e => setSelectedAchievement(e.target.value)}
+              required
+            >
+              <option value="">-- Select achievement --</option>
+              {achievements.map(a => (
+                <option key={a._id} value={a._id}>{a.title}</option>
+              ))}
+            </select>
+          </div>
 
-      <label>
-        Select Member:
-        <select
-          value={selectedUser}
-          onChange={e => setSelectedUser(e.target.value)}
-          required
-        >
-          <option value="">-- Select member --</option>
-          {members.map(m => (
-            <option key={m._id} value={m._id}>{m.name || m.email}</option>
-          ))}
-        </select>
-      </label>
+          <div className="form-group">
+            <label>Select Member:</label>
+            <select
+              value={selectedUser}
+              onChange={e => setSelectedUser(e.target.value)}
+              required
+            >
+              <option value="">-- Select member --</option>
+              {members.map(m => (
+                <option key={m._id} value={m._id}>{m.name || m.email}</option>
+              ))}
+            </select>
+          </div>
 
-      <button type="submit" disabled={awarding}>
-        {awarding ? 'Awarding...' : 'Award Achievement'}
-      </button>
-    </form>
+          <button type="submit" disabled={awarding} className="login-btn">
+            {awarding ? 'Awarding...' : 'Award Achievement'}
+          </button>
+        </form>
+      </div>
+    </div>
   );
 };
 

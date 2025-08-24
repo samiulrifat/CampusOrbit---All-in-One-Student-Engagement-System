@@ -1,70 +1,88 @@
+/* Glass-morphism card for the calendar page */
 .calendar-page {
   max-width: 1000px;
   margin: 30px auto;
-  background: #f8f9fa;
-  padding: 30px;
+  padding: 25px;
   border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
   font-family: Arial, sans-serif;
 }
 
 .calendar-title {
   text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
   color: #333;
-  margin-bottom: 18px;
 }
 
+/* Filters section */
 .calendar-filters {
   display: flex;
-  gap: 10px;
-  margin-bottom: 24px;
   flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
   justify-content: center;
 }
 
 .calendar-filters select,
 .calendar-filters input[type="date"] {
-  padding: 7px 12px;
-  border-radius: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
   border: 1px solid #ccc;
-  font-size: 16px;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.2s ease;
 }
 
-.calendar-filters button {
-  padding: 7px 18px;
-  background: #3788d8;
-  color: #fff;
+.calendar-filters select:focus,
+.calendar-filters input:focus {
+  border-color: #5a9;
+  box-shadow: 0 0 6px rgba(90, 200, 150, 0.4);
+}
+
+.calendar-filters button.clear-btn {
+  padding: 8px 18px;
   border: none;
-  border-radius: 6px;
-  font-size: 16px;
+  border-radius: 8px;
+  background: #ef5350;
+  color: #fff;
+  font-weight: bold;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.calendar-filters button:hover {
-  background: #2564a4;
+.calendar-filters button.clear-btn:hover {
+  background: #c43a3a;
 }
 
-/* Styles for the event contents inside the calendar */
+/* FullCalendar event styling */
 .fc-daygrid-event {
-  background-color: #3788d8 !important;
+  background-color: #5a9 !important;
   color: white !important;
   border-radius: 6px !important;
-  padding: 2px !important;
+  padding: 4px !important;
   font-size: 12px !important;
+  cursor: pointer;
+  transition: transform 0.15s ease;
 }
 
-.fc-daygrid-event > div {
+.fc-daygrid-event:hover {
+  transform: scale(1.05);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.2);
+}
+
+/* Event content layout */
+.fc-event-content {
   display: flex;
   flex-direction: column;
-  /* Align text */
 }
 
-/* Smaller location text */
-.fc-daygrid-event div div {
+.fc-event-location {
   font-size: 10px !important;
   color: #d3d7db !important;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-

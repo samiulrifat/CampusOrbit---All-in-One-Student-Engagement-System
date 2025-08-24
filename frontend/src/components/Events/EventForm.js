@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
+import "./Events.css"; // Make sure to include styling
 
 const EventForm = ({ onSubmit, event, onCancel }) => {
-  const [form, setForm] = useState({ title: "", date: "", location: "", description: "", _id: null });
+  const [form, setForm] = useState({
+    title: "",
+    date: "",
+    location: "",
+    description: "",
+    _id: null
+  });
   const [photos, setPhotos] = useState([]);
 
   useEffect(() => {
@@ -19,11 +26,10 @@ const EventForm = ({ onSubmit, event, onCancel }) => {
     }
   }, [event]);
 
-  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
-  
-  const handleFileChange = e => setPhotos([...e.target.files]);
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleFileChange = (e) => setPhotos([...e.target.files]);
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.title || !form.date || !form.location) {
       alert("Please fill in Title, Date, and Location.");
@@ -33,12 +39,14 @@ const EventForm = ({ onSubmit, event, onCancel }) => {
   };
 
   return (
-    <form className="event-form" onSubmit={handleSubmit}>
+    <form className="event-form glass-card" onSubmit={handleSubmit}>
+      <h3 className="form-title">{form._id ? "Edit Event" : "Add Event"}</h3>
+
       <input
         className="input-field"
         type="text"
         name="title"
-        placeholder="Title"
+        placeholder="Event Title"
         value={form.title}
         onChange={handleChange}
       />
@@ -71,19 +79,21 @@ const EventForm = ({ onSubmit, event, onCancel }) => {
         accept="image/*"
         onChange={handleFileChange}
       />
-      <button className="save-button" type="submit">
-        {form._id ? "Update" : "Add"} Event
-      </button>
-      {form._id && (
-        <button
-          type="button"
-          onClick={onCancel}
-          style={{ marginLeft: "10px", background: "#ef5350" }}
-          className="save-button"
-        >
-          Cancel
+
+      <div className="form-buttons">
+        <button className="save-button" type="submit">
+          {form._id ? "Update Event" : "Add Event"}
         </button>
-      )}
+        {form._id && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="save-button cancel"
+          >
+            Cancel
+          </button>
+        )}
+      </div>
     </form>
   );
 };

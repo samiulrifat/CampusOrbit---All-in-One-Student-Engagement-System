@@ -36,28 +36,52 @@ const CreateAchievement = ({ clubId, onCreate }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
-      <h3>Create Achievement</h3>
-      <label>
-        Title (required):
-        <input value={title} onChange={e => setTitle(e.target.value)} required />
-      </label>
-      <label>
-        Description:
-        <textarea value={description} onChange={e => setDescription(e.target.value)} />
-      </label>
-      <label>
-        Icon URL:
-        <input value={iconUrl} onChange={e => setIconUrl(e.target.value)} />
-      </label>
-      <label>
-        Criteria:
-        <textarea value={criteria} onChange={e => setCriteria(e.target.value)} />
-      </label>
-      <button type="submit" disabled={loading}>
-        {loading ? 'Creating...' : 'Create Achievement'}
-      </button>
-    </form>
+    <div>
+      <div>
+        <form onSubmit={handleSubmit} className="achievement-form">
+          <h3>Create Achievement</h3>
+
+          <div className="form-group">
+            <label>Title (required):</label>
+            <input
+              type="text"
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Description:</label>
+            <textarea
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Icon URL:</label>
+            <input
+              type="text"
+              value={iconUrl}
+              onChange={e => setIconUrl(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Criteria:</label>
+            <textarea
+              value={criteria}
+              onChange={e => setCriteria(e.target.value)}
+            />
+          </div>
+
+          <button type="submit" disabled={loading} className="login-btn">
+            {loading ? 'Creating...' : 'Create Achievement'}
+          </button>
+        </form>
+      </div>
+    </div>
   );
 };
 

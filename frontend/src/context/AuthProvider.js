@@ -1,38 +1,46 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+// src/context/AuthProvider.js
+import React, { createContext, useState, useEffect, useContext } from "react";
 
-export const AuthContext = createContext(null);
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user,   setUser  ] = useState(null);
+  const [loading,setLoading] = useState(true);
 
-  // Fetch authenticated user on mount, using stored token
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
+  const login = async (token) => {
+    localStorage.setItem("token", token);
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to fetch user");
+      const data = await res.json();
+      setUser(data);
+    } catch {
       setUser(null);
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
       setLoading(false);
       return;
     }
-
-    axios.get('/api/auth/me', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(res => {
-      setUser(res.data); // Must include user info with role!
-      setLoading(false);
-    })
-    .catch(() => {
-      setUser(null);
-      setLoading(false);
-    });
+    login(token).finally(() => setLoading(false));
   }, []);
 
-  // Expose user, setUser (for login/logout), and loading state
   return (
-    <AuthContext.Provider value={{ user, setUser, loading }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+// this is the hook you’re re-exporting in `hooks/useAuth.js`
+export const useAuth = () => useContext(AuthContext);

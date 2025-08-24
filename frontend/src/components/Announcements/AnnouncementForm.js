@@ -22,7 +22,7 @@ const AnnouncementForm = ({ clubId, onCreate }) => {
       );
       setTitle('');
       setContent('');
-      if (onCreate) onCreate(); // inform parent to refresh announcements list
+      if (onCreate) onCreate();
     } catch (err) {
       console.error('Failed to post announcement:', err);
       alert(err.response?.data?.message || 'Failed to post announcement');
@@ -31,21 +31,25 @@ const AnnouncementForm = ({ clubId, onCreate }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
-      <input
-        type="text"
-        placeholder="Announcement title"
-        value={title}
-        onChange={e => setTitle(e.target.value)}
-        style={{ width: '100%', padding: '0.5rem', marginBottom: '0.5rem', fontSize: '1rem' }}
-      />
-      <textarea
-        placeholder="Write announcement..."
-        value={content}
-        onChange={e => setContent(e.target.value)}
-        style={{ width: '100%', padding: '0.5rem', height: '100px', fontSize: '1rem' }}
-      />
-      <button type="submit" disabled={posting} style={{ padding: '0.5rem 1rem', fontSize: '1rem', marginTop: '0.5rem' }}>
+    <form onSubmit={handleSubmit} className="announcement-form">
+      <div className="form-group">
+        <input
+          type="text"
+          placeholder="Announcement title"
+          value={title}
+          onChange={e => setTitle(e.target.value)}
+          required
+        />
+      </div>
+      <div className="form-group">
+        <textarea
+          placeholder="Write announcement..."
+          value={content}
+          onChange={e => setContent(e.target.value)}
+          required
+        />
+      </div>
+      <button type="submit" disabled={posting} className="login-btn">
         {posting ? 'Posting...' : 'Post Announcement'}
       </button>
     </form>
