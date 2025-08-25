@@ -1,161 +1,139 @@
+const User = require('../models/User');
 const Club = require('../models/Club');
 
-// ========================
-// Create a new club
-// ========================
-exports.createClub = async (req, res) => {
+// Create a club
+async function createClub(req, res) {
+  const { name, description, profileImage } = req.body;
+  const creatorId = req.user.userId;
+
   try {
-    const { name, description, profileImage } = req.body;
-
-    if (!name) {
-      return res.status(400).json({ error: 'Club name is required' });
-    }
-
-    // Check if club name is already taken
-    const existing = await Club.findOne({ name: name.trim() });
-    if (existing) {
-      return res.status(400).json({ error: 'A club with this name already exists' });
-    }
-
-    const club = new Club({
-      name: name.trim(),
-      description: description || '',
-      profileImage: profileImage || '',
-      creatorId: req.user.userId,
-      members: [
-        {
-          userId: req.user.userId,
-          role: 'admin'
-        }
-      ]
+    const newClub = new Club({
+      name,
+      description,
+      profileImage,
+      creatorId,
+      members: [{ userId: creatorId, role: 'admin' }]
     });
 
-    await club.save();
-    res.status(201).json({ message: 'Club created successfully', club });
-  } catch (error) {
-    console.error('Error creating club:', error);
-    res.status(500).json({ error: 'Server error' });
+    await newClub.save();
+    res.status(201).json({ message: 'Club created', club: newClub });
+  } catch (err) {
+    console.error('Error creating club:', err);
+    res.status(500).json({ error: 'Server error creating club' });
   }
-};
+}
 
-// ========================
-// Get all clubs
-// ========================
-exports.getClubs = async (req, res) => {
+// List all clubs
+async function getClubs(req, res) {
   try {
-    const clubs = await Club.find().populate('members.userId', 'name email').populate('creatorId', 'name email');
+    const clubs = await Club.find({});
     res.json(clubs);
-  } catch (error) {
-    console.error('Error fetching clubs:', error);
-    res.status(500).json({ error: 'Server error' });
+  } catch (err) {
+    console.error('Error fetching clubs:', err);
+    res.status(500).json({ error: 'Server error fetching clubs' });
   }
-};
+}
 
-// ========================
-// Get a club by ID
-// ========================
-exports.getClubById = async (req, res) => {
+// Get single club
+async function getClubById(req, res) {
   try {
-    const club = await Club.findById(req.params.id).populate('members.userId', 'name email').populate('creatorId', 'name email');
-    if (!club) {
-      return res.status(404).json({ error: 'Club not found' });
-    }
+    const club = await Club.findById(req.params.id).populate('members.userId', 'name email');
+    if (!club) return res.status(404).json({ error: 'Club not found' });
     res.json(club);
-  } catch (error) {
-    console.error('Error fetching club:', error);
-    res.status(500).json({ error: 'Server error' });
+  } catch (err) {
+    console.error('Error fetching club:', err);
+    res.status(500).json({ error: 'Server error fetching club' });
   }
-};
+}
 
-// ========================
 // Update club profile
-// ========================
-exports.updateClubProfile = async (req, res) => {
+async function updateClubProfile(req, res) {
   try {
-    const { name, description, profileImage } = req.body;
-
     const club = await Club.findById(req.params.id);
     if (!club) return res.status(404).json({ error: 'Club not found' });
 
-    if (name) club.name = name.trim();
+    const { name, description, profileImage } = req.body;
+    if (name) club.name = name;
     if (description) club.description = description;
     if (profileImage) club.profileImage = profileImage;
 
     await club.save();
-    res.json({ message: 'Club profile updated successfully', club });
-  } catch (error) {
-    console.error('Error updating club profile:', error);
-    res.status(500).json({ error: 'Server error' });
+    res.json({ message: 'Club updated', club });
+  } catch (err) {
+    console.error('Error updating club:', err);
+    res.status(500).json({ error: 'Server error updating club' });
   }
-};
+}
 
-// ========================
-// Invite a member (by email)
-// ========================
-exports.inviteMember = async (req, res) => {
+// Add member directly
+async function inviteMember(req, res) {
+  const clubId = req.params.id;
+  const { email, role = 'member' } = req.body;
+
+  if (!email) return res.status(400).json({ error: 'Email is required' });
+
   try {
-    const { email } = req.body;
-    if (!email) return res.status(400).json({ error: 'Member email is required' });
-
-    const club = await Club.findById(req.params.id);
+    const club = await Club.findById(clubId);
     if (!club) return res.status(404).json({ error: 'Club not found' });
 
-    // Check if already a member
-    const alreadyMember = club.members.some(m => m.userId && m.userId.email === email);
-    const alreadyInvited = club.invitations.some(inv => inv.email === email);
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
-    if (alreadyMember) {
-      return res.status(400).json({ error: 'This user is already a member' });
-    }
-    if (alreadyInvited) {
-      return res.status(400).json({ error: 'Invitation already sent to this email' });
-    }
+    const alreadyMember = club.members.some(
+      m => m.userId.toString() === user._id.toString()
+    );
+    if (alreadyMember)
+      return res.status(400).json({ error: 'User is already a member' });
 
-    club.invitations.push({ email });
+    club.members.push({ userId: user._id, role });
     await club.save();
 
-    res.json({ message: `Invitation sent to ${email}`, club });
-  } catch (error) {
-    console.error('Error inviting member:', error);
-    res.status(500).json({ error: 'Server error' });
+    res.json({ message: 'User added to club', club });
+  } catch (err) {
+    console.error('Error adding member:', err);
+    res.status(500).json({ error: 'Server error adding member' });
   }
-};
+}
 
-// ========================
-// Remove a member
-// ========================
-exports.removeMember = async (req, res) => {
+// Remove member
+async function removeMember(req, res) {
+  const clubId = req.params.id;
+  const { userId } = req.body;
+
+  if (!userId) return res.status(400).json({ error: 'userId is required' });
+
   try {
-    const { userId } = req.body;
-    if (!userId) return res.status(400).json({ error: 'User ID is required' });
-
-    const club = await Club.findById(req.params.id);
+    const club = await Club.findById(clubId);
     if (!club) return res.status(404).json({ error: 'Club not found' });
 
-    const beforeCount = club.members.length;
     club.members = club.members.filter(m => m.userId.toString() !== userId);
-
-    if (club.members.length === beforeCount) {
-      return res.status(400).json({ error: 'Member not found in club' });
-    }
-
     await club.save();
-    res.json({ message: 'Member removed', club });
-  } catch (error) {
-    console.error('Error removing member:', error);
-    res.status(500).json({ error: 'Server error' });
-  }
-};
 
-// ========================
-// Delete a club
-// ========================
-exports.deleteClub = async (req, res) => {
-  try {
-    await Club.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Club deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting club:', error);
-    res.status(500).json({ error: 'Server error' });
+    res.json({ message: 'Member removed', club });
+  } catch (err) {
+    console.error('Error removing member:', err);
+    res.status(500).json({ error: 'Server error removing member' });
   }
+}
+
+// Delete club
+async function deleteClub(req, res) {
+  try {
+    const club = await Club.findByIdAndDelete(req.params.id);
+    if (!club) return res.status(404).json({ error: 'Club not found' });
+    res.json({ message: 'Club deleted' });
+  } catch (err) {
+    console.error('Error deleting club:', err);
+    res.status(500).json({ error: 'Server error deleting club' });
+  }
+}
+
+module.exports = {
+  createClub,
+  getClubs,
+  getClubById,
+  updateClubProfile,
+  inviteMember,
+  removeMember,
+  deleteClub
 };

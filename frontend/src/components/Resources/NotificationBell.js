@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import api from '../api';
+import api from '../../api';
 
 const NotificationBell = () => {
   const [open, setOpen] = useState(false);
@@ -8,7 +8,7 @@ const NotificationBell = () => {
 
   const fetchNotifications = async () => {
     try {
-      const res = await api.get('/api/notifications'); // server auto-generates 24h reminders
+      const res = await api.get('/api/notifications');
       const list = res.data || [];
       setItems(list);
       setUnread(list.filter(n => !n.read).length);

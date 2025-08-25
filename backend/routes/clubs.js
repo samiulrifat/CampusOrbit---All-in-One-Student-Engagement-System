@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-const Club = require('../models/Club');
-
 const {
   createClub,
   getClubs,
@@ -10,19 +8,26 @@ const {
   updateClubProfile,
   inviteMember,
   removeMember,
-  deleteClub,
+  deleteClub
 } = require('../controllers/clubController');
 
 const { verifyToken, requireOfficer } = require('../middleware/auth');
 
-
-// Authenticated user can get list of clubs they have created (are admins of)
+// ========================
+// User-specific routes
+// ========================
 router.get('/user', verifyToken, async (req, res) => {
   try {
-    console.log('Logged in userId:', req.user.userId);
     const userId = req.user.userId;
-    const clubs = await Club.find({ creatorId: userId }).select('_id name');
-    console.log('Clubs returned:', clubs);
+
+    // Find clubs where user is a member OR the creator
+    const clubs = await Club.find({
+      $or: [
+        { creatorId: userId },
+        { 'members.userId': userId }
+      ]
+    });
+
     res.json(clubs);
   } catch (err) {
     console.error('Error fetching clubs for user:', err);
@@ -30,33 +35,47 @@ router.get('/user', verifyToken, async (req, res) => {
   }
 });
 
-//calendar component needs this to populate club filter dropdown
-router.get('/', async (req, res) => {
+// ========================
+// Public routes
+// ========================
+router.get('/calendar', async (req, res) => {
   const clubs = await Club.find({}, 'name');
   res.json(clubs);
 });
 
-
-
-// Public: list all clubs
 router.get('/', getClubs);
-
-// Public: get single club details
 router.get('/:id', getClubById);
+// Express (Node.js)
+router.get("/invitations/user", verifyToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
 
-// Auth: logged in users can create a club
+    // Find clubs where user is creator OR member
+    const clubs = await Club.find({
+      $or: [
+        { creatorId: userId },
+        { 'members.userId': userId }
+      ]
+    }).populate('members.userId', 'name email') // populate member details
+      .populate('creatorId', 'name email');     // populate creator details
+
+    res.json(clubs);
+  } catch (err) {
+    console.error('Error fetching clubs for user:', err);
+    res.status(500).json({ error: 'Server error fetching clubs' });
+  }
+});
+
+
+
+
+// ========================
+// Authenticated actions
+// ========================
 router.post('/', verifyToken, createClub);
-
-// Auth + Role: only club officers/admins can update
 router.patch('/:id', verifyToken, requireOfficer, updateClubProfile);
-
-// Auth + Role: invite a member
 router.post('/:id/invite', verifyToken, requireOfficer, inviteMember);
-
-// Auth + Role: remove a member
 router.delete('/:id/remove', verifyToken, requireOfficer, removeMember);
-
-// Auth + Role: delete club
 router.delete('/:id', verifyToken, requireOfficer, deleteClub);
 
 module.exports = router;

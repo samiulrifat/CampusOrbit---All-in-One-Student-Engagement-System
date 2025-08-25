@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import useAuth from '../../hooks/useAuth';
-
+import './Resources.css';
 
 const ResourceList = ({ clubId }) => {
   const { user } = useAuth();
@@ -42,18 +42,21 @@ const ResourceList = ({ clubId }) => {
   if (resources.length === 0) return <p>No resources shared yet.</p>;
 
   return (
-    <div>
+    <div className="resource-list glass-card">
       <h3>Shared Resources</h3>
       <ul>
         {resources.map(resource => (
-          <li key={resource._id} style={{ marginBottom: '1em' }}>
-            {resource.type === 'link' ? (
-              <a href={resource.url} target="_blank" rel="noopener noreferrer">{resource.title}</a>
-            ) : (
-              <a href={resource.url} target="_blank" rel="noopener noreferrer">{resource.fileName || resource.title}</a>
-            )}
+          <li key={resource._id} className="resource-item">
+            <a href={resource.url} target="_blank" rel="noopener noreferrer" className="resource-link">
+              {resource.type === 'link'
+                ? resource.title
+                : (resource.fileName || resource.title)}
+            </a>
             {user && user._id === resource.uploader && (
-              <button onClick={() => deleteResource(resource._id)} style={{ marginLeft: '1em' }}>
+              <button
+                onClick={() => deleteResource(resource._id)}
+                className="delete-btn"
+              >
                 Delete
               </button>
             )}

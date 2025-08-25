@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import ResourceList from '../../components/Resources/ResourceList';
-import UploadResource from '../../components/Resources/UploadResource';
+import ResourceList from '../Resources/ResourceList';
+import UploadResource from '../Resources/UploadResource';
 
 import './ClubWorkspace.css';
 

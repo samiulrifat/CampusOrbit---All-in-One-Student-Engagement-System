@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./Events.css"; // Make sure to include styling
+import "./EventForm.css";
 
 const EventForm = ({ onSubmit, event, onCancel }) => {
   const [form, setForm] = useState({

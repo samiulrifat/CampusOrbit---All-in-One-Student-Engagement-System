@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import useAuth from '../../hooks/useAuth';
 
 const PhotoUploadForm = ({ eventId, onUploadSuccess }) => {
-  const { user } = useAuth(); // (optional) if you want user info
   const [files, setFiles] = useState(null);
   const [error, setError] = useState('');
 

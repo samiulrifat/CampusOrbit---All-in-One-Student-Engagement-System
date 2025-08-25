@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./ClubManagement.css";
 
-export default function ClubManagement() {
+const ClubManagement = () => {
   const [clubs, setClubs] = useState([]);
   const [newClubName, setNewClubName] = useState("");
   const [selectedClub, setSelectedClub] = useState(null);
@@ -29,7 +29,7 @@ export default function ClubManagement() {
     }
   };
 
-  // Create club (requires login)
+  // Create club
   const handleCreateClub = async () => {
     if (!newClubName.trim()) return;
     try {
@@ -45,8 +45,8 @@ export default function ClubManagement() {
     }
   };
 
-  // Invite member (officer/admin)
-  const handleInviteMember = async () => {
+  // Add member directly (no invitation)
+  const handleAddMember = async () => {
     if (!inviteEmail.trim() || !selectedClub) return;
     try {
       const res = await axios.post(
@@ -58,11 +58,11 @@ export default function ClubManagement() {
       setClubs(clubs.map(c => c._id === res.data.club._id ? res.data.club : c));
       setInviteEmail("");
     } catch (err) {
-      console.error("Error inviting member:", err.response?.data || err);
+      console.error("Error adding member:", err.response?.data || err);
     }
   };
 
-  // Remove member (officer/admin)
+  // Remove member
   const handleRemoveMember = async (userId) => {
     try {
       const res = await axios.delete(
@@ -76,7 +76,7 @@ export default function ClubManagement() {
     }
   };
 
-  // Delete club (officer/admin)
+  // Delete club
   const handleDeleteClub = async (clubId) => {
     try {
       await axios.delete(`${API_URL}/${clubId}`, authHeaders);
@@ -95,13 +95,13 @@ export default function ClubManagement() {
       <div className="glass-card">
         <h2>Create New Club</h2>
         <div className="form-row">
-        <input
-          type="text"
-          placeholder="Club name"
-          value={newClubName}
-          onChange={(e) => setNewClubName(e.target.value)}
-        />
-        <button onClick={handleCreateClub} className="btn-primary">Create</button>
+          <input
+            type="text"
+            placeholder="Club name"
+            value={newClubName}
+            onChange={(e) => setNewClubName(e.target.value)}
+          />
+          <button onClick={handleCreateClub} className="btn-primary">Create</button>
         </div>
       </div>
 
@@ -128,15 +128,15 @@ export default function ClubManagement() {
         <div className="glass-card">
           <h2>Manage "{selectedClub.name}"</h2>
 
-          {/* Invite Section */}
+          {/* Add Member */}
           <div className="invite-member">
             <input
               type="email"
-              placeholder="Invite member by email"
+              placeholder="Add member by email"
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
             />
-            <button onClick={handleInviteMember} className="btn-success">Invite</button>
+            <button onClick={handleAddMember} className="btn-success">Add</button>
           </div>
 
           {/* Members Section */}
@@ -155,21 +155,10 @@ export default function ClubManagement() {
               ))
             )}
           </div>
-          
-          <div className="club-invitations">
-            <h3>Pending Invitations</h3>
-            {selectedClub.invitations?.length === 0 ? (
-              <p>No pending invitations.</p>
-            ) : (
-              selectedClub.invitations.map((inv, i) => (
-                <div key={i} className="invitation-item">
-                  <span>{i + 1}.{inv.email}</span>
-                </div>
-              ))
-            )}
-          </div>
         </div>
       )}
     </div>
   );
 }
+
+export default ClubManagement;

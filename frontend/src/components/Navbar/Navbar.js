@@ -1,72 +1,148 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import useAuth from "../../hooks/useAuth";
+import axios from "axios";
 import logo from "../../assets/logo.png";
 import "./Navbar.css";
 
 const Navbar = () => {
-    const [isOpen, setIsOpen] = useState(false);
-    const { user, setUser } = useAuth();
-    const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
+  const [invitations, setInvitations] = useState([]);
+  const { user, setUser, loading } = useAuth();
+  const [clubs, setClubs] = useState([]);
+  const [selectedClub, setSelectedClub] = useState(null);
+  const navigate = useNavigate();
 
-    const handleLogout = () => {
-        localStorage.removeItem("token");
-        setUser(null);
-        navigate("/login");
+  const token = localStorage.getItem("token");
+  const API_URL = "http://localhost:5000/api/clubs/user";
+  const INVITE_API = "http://localhost:5000/api/clubs/invitations/user";
+
+  // Fetch user clubs
+  useEffect(() => {
+    if (!user || !token) return;
+    const fetchClubs = async () => {
+      try {
+        const res = await axios.get(API_URL, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setClubs(res.data);
+        if (res.data.length > 0) setSelectedClub(res.data[0]);
+      } catch (err) {
+        console.error("Error fetching clubs:", err.response?.data || err);
+        if (err.response?.status === 401) {
+          localStorage.removeItem("token");
+          setUser(null);
+        }
+      }
     };
+    fetchClubs();
+  }, [user, token, setUser]);
 
-    const isAdmin = user?.role === 'club_admin';
+  // Fetch invitations
+  useEffect(() => {
+    if (!user || !token) return;
+    const fetchInvitations = async () => {
+      try {
+        const res = await axios.get(INVITE_API, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setInvitations(res.data);
+      } catch (err) {
+        console.error("Error fetching invitations:", err.response?.data || err);
+      }
+    };
+    fetchInvitations();
+  }, [user, token]);
 
-    return (
-        <nav className="navbar">
-        <div className="navbar-container">
-            <div className="navbar-brand">
-                <img src={logo} alt="CampusOrbit Logo" className="app-logo" onClick={() => navigate("/dashboard")}/>
-                <Link to="/" className="navbar-logo">CampusOrbit</Link>
-            </div>
+  const handleAcceptInvitation = async (invitationId) => {
+    try {
+      await axios.patch(`http://localhost:5000/api/clubs/invitations/${invitationId}/accept`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setInvitations(prev => prev.filter(inv => inv.invitationId !== invitationId));
+    } catch (err) {
+      console.error("Error accepting invitation:", err.response?.data || err);
+    }
+  };
 
-            <button className="navbar-toggle" onClick={() => setIsOpen((prev) => !prev)}>
-                {isOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+    navigate("/login");
+  };
 
-            <div className={`navbar-links ${isOpen ? "open" : ""}`}>
-            <Link to="/" className="navbar-link" onClick={() => setIsOpen(false)}>Home</Link>
+  if (loading) return null;
 
-            {user ? (
-                <>
-                {isAdmin ? (
-                    <>
-                    <Link to="/events" className="navbar-link" onClick={() => setIsOpen(false)}>Events</Link>
-                    <Link to="/clubs/manage" className="navbar-link" onClick={() => setIsOpen(false)}>Clubs</Link>
-                    <Link to="/meetings" className="navbar-link" onClick={() => setIsOpen(false)}>Meetings</Link>
-                    <Link to="/create-poll" className="navbar-link" onClick={() => setIsOpen(false)}>Create Poll</Link>
-                    <Link to="/clubs/achievements/:clubId" className="navbar-link" onClick={() => setIsOpen(false)}>Achievements</Link>
-                    <Link to="/clubs/announcements/:clubId" className="navbar-link" onClick={() => setIsOpen(false)}>Announcements</Link>
-                    </>
-                ) : (
-                    <>
-                    <Link to="/events/:id" className="navbar-link" onClick={() => setIsOpen(false)}>Event</Link>
-                    <Link to="/calender" className="navbar-link" onClick={() => setIsOpen(false)}>EventCalendar</Link>
-                    <Link to="/polls" className="navbar-link" onClick={() => setIsOpen(false)}>PollsList</Link>
-                    <Link to="/clubs/workspace/:clubId" className="navbar-link" onClick={() => setIsOpen(false)}>ClubWorkspace</Link>
-                    <Link to="/clubs/achievements/:clubId" className="navbar-link" onClick={() => setIsOpen(false)}>Achievements</Link>
-                    <Link to="/clubs/announcements/:clubId" className="navbar-link" onClick={() => setIsOpen(false)}>Announcements</Link>
-                    </>
-                )}
-                <Link to="/dashboard"><span className="navbar-user-badge">{user.name}</span></Link>
-                <button className="navbar-logout" onClick={handleLogout}>Logout</button>
-                </>
-            ) : (
-                <>
-                <Link to="/login" className="btn-secondary" onClick={() => setIsOpen(false)}>Login</Link>
-                <Link to="/register" className="btn-tartiary" onClick={() => setIsOpen(false)}>Register</Link>
-                </>
-            )}
-            </div>
+  const isAdmin = user?.role === "club_admin";
+  const clubId = selectedClub?._id || (clubs.length > 0 ? clubs[0]._id : null);
+
+  return (
+    <nav className="navbar">
+      <div className="navbar-container">
+        <div className="navbar-brand">
+          <img src={logo} alt="CampusOrbit Logo" className="app-logo" onClick={() => navigate("/dashboard")} />
+          <Link to="/" className="navbar-logo">CampusOrbit</Link>
         </div>
-        </nav>
-    );
+
+        <button className="navbar-toggle" onClick={() => setIsOpen(prev => !prev)}>
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
+        <div className={`navbar-links ${isOpen ? "open" : ""}`}>
+          <Link to="/" className="navbar-link" onClick={() => setIsOpen(false)}>Home</Link>
+
+          {user ? (
+            <>
+              {isAdmin ? (
+                <>
+                  <Link to="/events" className="navbar-link" onClick={() => setIsOpen(false)}>Events</Link>
+                  <Link to="/clubs/manage" className="navbar-link" onClick={() => setIsOpen(false)}>Clubs</Link>
+                  <Link to="/meetings" className="navbar-link" onClick={() => setIsOpen(false)}>Meetings</Link>
+                  <Link to={`/create-poll`} className="navbar-link" onClick={() => setIsOpen(false)}>Create Poll</Link>
+                  <Link to="/invitations" className="navbar-link">Members</Link>
+                  <Link to={`/clubs/resources/upload/${clubId}`} className="navbar-link" onClick={() => setIsOpen(false)}>Resources</Link>
+                  <Link to={`/clubs/achievements/${clubId}`} className="navbar-link" onClick={() => setIsOpen(false)}>Achievements</Link>
+                  <Link to={`/clubs/announcements/${clubId}`} className="navbar-link" onClick={() => setIsOpen(false)}>Announcements</Link>
+                </>
+              ) : (
+                <>
+                  <Link to={`/clubs/resources/${clubId}`} className="navbar-link" onClick={() => setIsOpen(false)}>Resources</Link>
+                  <Link to={`/clubs/workspace/${clubId}`} className="navbar-link" onClick={() => setIsOpen(false)}>ClubWorkspace</Link>
+                  <Link to="/clubs/invitations/user" className="navbar-link" onClick={() => setIsOpen(false)}>Invitations</Link>
+                  <Link to={`/clubs/achievements/${clubId}`} className="navbar-link" onClick={() => setIsOpen(false)}>Achievements</Link>
+                  <Link to={`/clubs/announcements/list/${clubId}`} className="navbar-link" onClick={() => setIsOpen(false)}>Announcements</Link>
+                </>
+              )}
+
+              {/* Invitations */}
+              {invitations.length > 0 && (
+                <div className="navbar-invitations">
+                  <span className="badge">{invitations.length} Invitations</span>
+                  <ul className="invite-dropdown">
+                    {invitations.map(inv => (
+                      <li key={inv.invitationId}>
+                        {inv.clubName}
+                        <button onClick={() => handleAcceptInvitation(inv.invitationId)}>Accept</button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <Link to="/dashboard"><span className="navbar-user-badge">{user.name}</span></Link>
+              <button className="navbar-logout" onClick={handleLogout}>Logout</button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="btn-secondary" onClick={() => setIsOpen(false)}>Login</Link>
+              <Link to="/register" className="btn-tartiary" onClick={() => setIsOpen(false)}>Register</Link>
+            </>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
 };
 
 export default Navbar;

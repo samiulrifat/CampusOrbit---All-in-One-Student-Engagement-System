@@ -7,7 +7,7 @@ const PhotoGallery = ({ photos }) => (
         <img
           key={index}
           src={url}
-          alt={`Event photo ${index + 1}`}
+          alt={`Event ${index + 1}`} // ✅ Removed "photo/image/picture"
           style={{ width: 150, height: 150, objectFit: 'cover', borderRadius: 8 }}
         />
       ))

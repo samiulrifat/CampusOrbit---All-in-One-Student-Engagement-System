@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import PhotoGallery from '../../components/Events/PhotoGallery';
-import PhotoUploadForm from '../../components/Events/PhotoUploadForm';
-import RSVPButton from '../../components/Events/RSVPButton';
-import AttendeeList from '../../components/Events/AttendeeList';
+import PhotoGallery from '../../components/Resources/PhotoGallery';
+import PhotoUploadForm from '../../components/Resources/PhotoUploadForm';
+import RSVPButton from '../../components/Resources/RSVPButton';
+import AttendeeList from '../../components/Resources/AttendeeList';
 import { useAuth } from '../../context/AuthProvider';
 
-import NotificationBell from '../../components/NotificationBell';
-import SponsorshipRequestForm from '../../components/SponsorshipRequestForm'; // New import
+import NotificationBell from '../../components/Resources/NotificationBell';
+import SponsorshipRequestForm from '../../components/Resources/SponsorshipRequestForm'; // New import
 
 import './EventPage.css';
 

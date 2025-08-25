@@ -1,21 +1,24 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import useAuth from '../../hooks/useAuth';
+import './Resources.css';
 
-
-const UploadResource = ({ clubId, onUploadSuccess }) => {
-  const { user } = useAuth();
-  const [type, setType] = useState('file'); // 'file' or 'link'
+const UploadResource = ({ onUploadSuccess }) => {
+  const { clubId } = useParams();
+  const [type, setType] = useState('file');
   const [file, setFile] = useState(null);
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
   const [uploading, setUploading] = useState(false);
 
   const token = localStorage.getItem('token');
+  const BACKEND_URL = "http://localhost:5000"; // your Express backend
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!clubId) return alert('Club not selected!');
     setUploading(true);
+
     try {
       if (type === 'file') {
         if (!file) {
@@ -24,14 +27,14 @@ const UploadResource = ({ clubId, onUploadSuccess }) => {
           return;
         }
         const formData = new FormData();
-        formData.append('file', file);
-        formData.append('title', title || file.name);
+        formData.append("file", file);
+        formData.append("title", title);
 
-        await axios.post(`/api/resources/upload/${clubId}`, formData, {
+        await axios.post(`${BACKEND_URL}/api/resources/upload/${clubId}`, formData, {
           headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
-          },
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`
+          }
         });
       } else {
         if (!title || !url) {
@@ -40,12 +43,11 @@ const UploadResource = ({ clubId, onUploadSuccess }) => {
           return;
         }
 
-        await axios.post(`/api/resources/link/${clubId}`, { title, url }, {
+        await axios.post(`${BACKEND_URL}/api/resources/link/${clubId}`, { title, url }, {
           headers: { Authorization: `Bearer ${token}` }
         });
       }
 
-      // Reset inputs
       setTitle('');
       setUrl('');
       setFile(null);
@@ -55,64 +57,64 @@ const UploadResource = ({ clubId, onUploadSuccess }) => {
       console.error('Resource upload failed:', error);
       alert('Upload failed. Please try again.');
     }
+
     setUploading(false);
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: '2em' }}>
-      <label>
-        Share type:
-        <select value={type} onChange={e => setType(e.target.value)}>
-          <option value="file">File Upload</option>
-          <option value="link">External Link</option>
-        </select>
-      </label>
+    <div className="resource-page">
+      <form onSubmit={handleSubmit} className="resource-form glass-card">
+        <h3>Share a Resource</h3>
 
-      <div style={{ marginTop: '1em' }}>
-        <label>
+        <label className="form-label">
+          Share type:
+          <select value={type} onChange={e => setType(e.target.value)} className="form-input">
+            <option value="file">File Upload</option>
+            <option value="link">External Link</option>
+          </select>
+        </label>
+
+        <label className="form-label">
           Title:
           <input
             type="text"
             placeholder="Resource title"
             value={title}
             onChange={e => setTitle(e.target.value)}
+            className="form-input"
             required={type === 'link'}
           />
         </label>
-      </div>
 
-      {type === 'file' ? (
-        <div style={{ marginTop: '1em' }}>
-          <label>
+        {type === 'file' ? (
+          <label className="form-label">
             Select file:
             <input
               type="file"
               onChange={e => setFile(e.target.files[0])}
-              required={type === 'file'}
+              className="form-input"
+              required
             />
           </label>
-        </div>
-      ) : (
-        <div style={{ marginTop: '1em' }}>
-          <label>
+        ) : (
+          <label className="form-label">
             URL:
             <input
               type="url"
               placeholder="https://example.com"
               value={url}
               onChange={e => setUrl(e.target.value)}
-              required={type === 'link'}
+              className="form-input"
+              required
             />
           </label>
-        </div>
-      )}
+        )}
 
-      <div style={{ marginTop: '1em' }}>
-        <button type="submit" disabled={uploading}>
+        <button type="submit" className="form-btn" disabled={uploading}>
           {uploading ? 'Sharing...' : 'Share Resource'}
         </button>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 };
 
