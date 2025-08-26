@@ -5,7 +5,12 @@ const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   passwordHash: { type: String, required: true },
-  role: { type: String, enum: ['student', 'clubAdmin', 'superAdmin'], default: 'student' }
+  role: { type: String, enum: ['student', 'clubAdmin', 'superAdmin'], default: 'student' },
+  
+  // Add this field:
+  clubsJoined: [
+    { type: mongoose.Schema.Types.ObjectId, ref: 'Club' }
+  ]
 }, { timestamps: true });
 
 // compare password method

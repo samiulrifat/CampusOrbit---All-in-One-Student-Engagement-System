@@ -88,6 +88,11 @@ async function inviteMember(req, res) {
     club.members.push({ userId: user._id, role });
     await club.save();
 
+    // Update the user's clubsJoined array
+    await User.findByIdAndUpdate(user._id, {
+      $addToSet: { clubsJoined: clubId }
+    });
+
     res.json({ message: 'User added to club', club });
   } catch (err) {
     console.error('Error adding member:', err);
@@ -108,6 +113,11 @@ async function removeMember(req, res) {
 
     club.members = club.members.filter(m => m.userId.toString() !== userId);
     await club.save();
+
+    // Also remove the club from user's clubsJoined array
+    await User.findByIdAndUpdate(userId, {
+      $pull: { clubsJoined: clubId }
+    });
 
     res.json({ message: 'Member removed', club });
   } catch (err) {
