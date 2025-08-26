@@ -6,6 +6,7 @@ import axios from 'axios';
 import './EventCalendar.css';
 
 const EventCalendar = () => {
+  // States for events and filter form inputs
   const [events, setEvents] = useState([]);
   const [filters, setFilters] = useState({
     category: '',
@@ -14,13 +15,21 @@ const EventCalendar = () => {
     endDate: ''
   });
 
+  // Clubs list for filter dropdown
   const [clubs, setClubs] = useState([]);
+  const [error, setError] = useState(null);  // For error messages
+
+  // Fetch clubs on component mount
   useEffect(() => {
     axios.get('/api/clubs')
       .then(res => setClubs(res.data))
-      .catch(err => console.error('Failed to fetch clubs:', err));
+      .catch(err => {
+        console.error('Failed to fetch clubs:', err);
+        setError('Failed to fetch clubs');
+      });
   }, []);
 
+  // Fetch events when filters change
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -40,11 +49,13 @@ const EventCalendar = () => {
         })));
       } catch (err) {
         console.error('Failed to fetch events:', err);
+        setError('Failed to fetch events');
       }
     };
     fetchEvents();
   }, [filters]);
 
+  // Render event content inside calendar (show location below event title)
   function renderEventContent(eventInfo) {
     return (
       <div className="fc-event-content">
@@ -54,21 +65,32 @@ const EventCalendar = () => {
     );
   }
 
+  // Show event details on click
   const handleEventClick = (info) => {
     const { title, extendedProps } = info.event;
     alert(
-      `Event: ${title}\nLocation: ${extendedProps.location || 'N/A'}\nCategory: ${extendedProps.category || 'N/A'}\nClub: ${extendedProps.club || 'N/A'}`
+      `Event: ${title}\n` +
+      `Location: ${extendedProps.location || 'N/A'}\n` +
+      `Category: ${extendedProps.category || 'N/A'}\n` +
+      `Club: ${extendedProps.club || 'N/A'}`
     );
   };
 
+  // Reset filters
   const clearFilters = () => setFilters({ category: '', clubId: '', startDate: '', endDate: '' });
 
   return (
     <div className="calendar-page glass-card">
       <h2 className="calendar-title">CampusOrbit Event Calendar</h2>
 
+      {error && <p className="error-message">{error}</p>}
+
       <div className="calendar-filters">
-        <select value={filters.category} onChange={e => setFilters({ ...filters, category: e.target.value })}>
+        <select
+          value={filters.category}
+          onChange={e => setFilters({ ...filters, category: e.target.value })}
+          aria-label="Filter by category"
+        >
           <option value="">All Categories</option>
           <option value="Academic">Academic</option>
           <option value="Sports">Sports</option>
@@ -77,17 +99,34 @@ const EventCalendar = () => {
           <option value="Social">Social</option>
         </select>
 
-        <select value={filters.clubId} onChange={e => setFilters({ ...filters, clubId: e.target.value })}>
+        <select
+          value={filters.clubId}
+          onChange={e => setFilters({ ...filters, clubId: e.target.value })}
+          aria-label="Filter by club"
+        >
           <option value="">All Clubs</option>
+          {clubs.length === 0 && <option disabled>Loading clubs...</option>}
           {clubs.map(club => (
             <option key={club._id} value={club._id}>{club.name}</option>
           ))}
         </select>
 
-        <input type="date" value={filters.startDate} onChange={e => setFilters({ ...filters, startDate: e.target.value })} />
-        <input type="date" value={filters.endDate} onChange={e => setFilters({ ...filters, endDate: e.target.value })} />
+        <input
+          type="date"
+          value={filters.startDate}
+          onChange={e => setFilters({ ...filters, startDate: e.target.value })}
+          aria-label="Filter start date"
+        />
+        <input
+          type="date"
+          value={filters.endDate}
+          onChange={e => setFilters({ ...filters, endDate: e.target.value })}
+          aria-label="Filter end date"
+        />
 
-        <button onClick={clearFilters} className="clear-btn">Clear Filters</button>
+        <button onClick={clearFilters} className="clear-btn" aria-label="Clear filters">
+          Clear Filters
+        </button>
       </div>
 
       <FullCalendar

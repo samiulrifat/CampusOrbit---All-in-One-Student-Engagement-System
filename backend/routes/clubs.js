@@ -1,7 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const Club = require('../models/Club');
+<<<<<<< HEAD
 const User = require('../models/User');
+=======
+
+>>>>>>> whatever
 const {
   createClub,
   getClubs,
@@ -14,7 +18,13 @@ const {
 const { verifyToken, requireOfficer } = require('../middleware/auth');
 
 // User-specific routes
+<<<<<<< HEAD
 
+=======
+// ========================
+
+// Get clubs where user is a member or creator (protected)
+>>>>>>> whatever
 router.get('/user', verifyToken, async (req, res) => {
   try {
     console.log('Entered /api/clubs/user route');
@@ -22,11 +32,14 @@ router.get('/user', verifyToken, async (req, res) => {
 
     const userId = req.user.userId;
 
+<<<<<<< HEAD
     if (!userId) {
       console.log('No userId in token payload');
       return res.status(400).json({ error: 'User ID missing from token' });
     }
 
+=======
+>>>>>>> whatever
     const clubs = await Club.find({
       $or: [
         { creatorId: userId },
@@ -72,26 +85,45 @@ router.post('/:clubId/members', verifyToken, requireOfficer, async (req, res) =>
 });
 
 // Public routes
+<<<<<<< HEAD
 
+=======
+// ========================
+
+// Public route to get all club names for calendar or dropdown
+>>>>>>> whatever
 router.get('/calendar', async (req, res) => {
-  const clubs = await Club.find({}, 'name');
-  res.json(clubs);
+  try {
+    const clubs = await Club.find({}, 'name');
+    res.json(clubs);
+  } catch (err) {
+    console.error('Error fetching clubs for calendar:', err);
+    res.status(500).json({ error: 'Server error fetching clubs' });
+  }
 });
 
+// Get all clubs (calls controller)
 router.get('/', getClubs);
+
+// Get one club by ID (calls controller)
 router.get('/:id', getClubById);
+<<<<<<< HEAD
+=======
+
+// Get club invitations for user (protected and populated)
+>>>>>>> whatever
 router.get("/invitations/user", verifyToken, async (req, res) => {
   try {
     const userId = req.user.userId;
 
-    // Find clubs where user is creator OR member
     const clubs = await Club.find({
       $or: [
         { creatorId: userId },
         { 'members.userId': userId }
       ]
-    }).populate('members.userId', 'name email') // populate member details
-      .populate('creatorId', 'name email');     // populate creator details
+    })
+    .populate('members.userId', 'name email')
+    .populate('creatorId', 'name email');
 
     res.json(clubs);
   } catch (err) {
@@ -100,11 +132,27 @@ router.get("/invitations/user", verifyToken, async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 
+=======
+// ========================
+// Authenticated actions
+// ========================
+
+// Create club (protected)
+>>>>>>> whatever
 router.post('/', verifyToken, createClub);
+
+// Update club profile (protected, officer only)
 router.patch('/:id', verifyToken, requireOfficer, updateClubProfile);
+
+// Invite member (protected, officer only)
 router.post('/:id/invite', verifyToken, requireOfficer, inviteMember);
+
+// Remove member (protected, officer only)
 router.delete('/:id/remove', verifyToken, requireOfficer, removeMember);
+
+// Delete club (protected, officer only)
 router.delete('/:id', verifyToken, requireOfficer, deleteClub);
 
 module.exports = router;
