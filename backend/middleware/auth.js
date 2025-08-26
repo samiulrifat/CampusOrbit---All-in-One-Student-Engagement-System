@@ -13,6 +13,7 @@ function verifyToken(req, res, next) {
   const token = authHeader.split(' ')[1];
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
+    console.log("Decoded JWT", decoded);
     req.user = decoded; // decoded contains userId, role, etc.
     next();
   } catch (err) {

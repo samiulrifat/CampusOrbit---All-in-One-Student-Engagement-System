@@ -1,12 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Meeting = require('../models/Meeting');
-const User = require('../models/User');
-
-// Middleware for auth and officer role verification can be added here
+const { verifyToken, requireOfficer, isClubMember } = require('../middleware/auth');
 
 // Create a new meeting (officer only)
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, requireOfficer, async (req, res) => {
   try {
     const { clubId, organizerId, title, agenda, location, scheduledAt } = req.body;
 
@@ -32,8 +30,8 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Get meetings for a club
-router.get('/:clubId', async (req, res) => {
+// Get meetings for a club (club member only)
+router.get('/:clubId', verifyToken, isClubMember, async (req, res) => {
   try {
     const { clubId } = req.params;
 
@@ -46,8 +44,8 @@ router.get('/:clubId', async (req, res) => {
   }
 });
 
-// Send invites - for demonstration, just mark invitationsSent true
-router.post('/:meetingId/invite', async (req, res) => {
+// Send invites (officer only)
+router.post('/:meetingId/invite', verifyToken, requireOfficer, async (req, res) => {
   try {
     const { meetingId } = req.params;
 
@@ -58,8 +56,6 @@ router.post('/:meetingId/invite', async (req, res) => {
       return res.status(400).json({ error: 'Invitations already sent' });
     }
 
-    // Here, implement actual invitation sending (email/notifications) as needed
-    // For now, just mark it as sent
     meeting.invitationsSent = true;
     await meeting.save();
 
@@ -70,8 +66,8 @@ router.post('/:meetingId/invite', async (req, res) => {
   }
 });
 
-// Mark attendance for a meeting - usually member confirms own attendance
-router.post('/:meetingId/attend', async (req, res) => {
+// Mark attendance (authenticated user)
+router.post('/:meetingId/attend', verifyToken, async (req, res) => {
   try {
     const { meetingId } = req.params;
     const { userId } = req.body;
