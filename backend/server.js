@@ -12,8 +12,8 @@ const notificationsRouter = require('./routes/notifications');
 const sponsorshipRouter = require('./routes/sponsorships');
 const clubsRoutes = require('./routes/clubs');
 
-app.use(express.json({ limit: '20mb' })); // Increase limit for base64 images
-app.use(express.urlencoded({ extended: true }));
+// app.use(express.json({ limit: '20mb' })); // Increase limit for base64 images
+// app.use(express.urlencoded({ extended: true }));
 
 const app = express();
 
