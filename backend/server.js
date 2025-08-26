@@ -10,6 +10,10 @@ const achievementRoutes = require('./routes/achievements');
 const announcementsRoutes = require('./routes/announcements');
 const notificationsRouter = require('./routes/notifications');
 const sponsorshipRouter = require('./routes/sponsorships');
+const clubsRoutes = require('./routes/clubs');
+
+app.use(express.json({ limit: '20mb' })); // Increase limit for base64 images
+app.use(express.urlencoded({ extended: true }));
 
 const app = express();
 
@@ -17,6 +21,8 @@ const app = express();
 app.use(express.json());
 
 app.use(cors());
+
+
 
 // ====== CONNECT TO DATABASE ======
 connectDB(); 
@@ -33,6 +39,7 @@ app.use('/api/polls', require('./routes/polls'));
 app.use('/api/clubs', require('./routes/clubs'));
 app.use('/api/events', require('./routes/events'));
 app.use('/api/resources', resourceRoutes);
+app.use('/api/clubs', clubsRoutes);
 app.use('/api/achievements', achievementRoutes);
 app.use('/api/announcements', announcementsRoutes);
 app.use('/api/notifications', notificationsRouter);
