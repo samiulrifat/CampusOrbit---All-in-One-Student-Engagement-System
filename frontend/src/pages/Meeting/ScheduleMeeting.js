@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../context/AuthProvider';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import './ScheduleMeeting.css';
 
 function ScheduleMeeting() {
@@ -16,43 +17,15 @@ function ScheduleMeeting() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  // Fetch clubs the user belongs to
+  const API_URL = "http://localhost:5000/api/clubs";
+
   useEffect(() => {
-    if (!user || !token) return;
-
-    let isCancelled = false;
-
-    async function fetchClubs() {
-      try {
-        const res = await fetch('http://localhost:5000/api/clubs/user', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          }
-        });
-        if (!res.ok) throw new Error('Failed to fetch clubs');
-        const data = await res.json();
-        if (!isCancelled) {
-          setClubs(data);
-        }
-      } catch (error) {
-        if (!isCancelled) {
-          setClubs([]);
-          console.error('Error fetching clubs:', error);
-        }
-      }
-    }
-    fetchClubs();
-    return () => {
-      isCancelled = true; // cleanup to avoid state updates after unmount
-    };
-  }, [user, token]);
-
-
-  if (loading) return <div>Loading...</div>;
-
-  if (!user || user.role !== 'club_admin') {
-    return <div>You do not have permission to schedule meetings.</div>;
-  }
+    // Fetch all clubs for club selection dropdown
+    fetch('http://localhost:5000/api/clubs')
+      .then(res => res.json())
+      .then(setClubs)
+      .catch(() => setClubs([]));
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,24 +38,16 @@ function ScheduleMeeting() {
     }
 
     try {
-      const res = await fetch('http://localhost:5000/api/meetings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({
-          clubId,
-          organizerId: user._id, // Automatically set organizer id
-          title,
-          agenda,
-          location,
-          scheduledAt,
-        }),
+      const res = await axios.post('http://localhost:5000/api/meetings', {
+        clubId,
+        organizerId: user._id,
+        title,
+        agenda,
+        location,
+        scheduledAt,
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
-
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || 'Failed to schedule meeting');
-        return;
-      }
 
       setMessage('Meeting scheduled successfully!');
       setTitle('');
@@ -90,8 +55,8 @@ function ScheduleMeeting() {
       setLocation('');
       setScheduledAt('');
       setClubId('');
-    } catch {
-      setError('Something went wrong');
+    } catch (err) {
+      setError(err.response?.data?.error || 'Something went wrong');
     }
   };
 
