@@ -29,17 +29,58 @@ exports.getEventById = async (req, res) => {
 
 // Create event — remain unchanged, already accepts clubId
 exports.createEvent = async (req, res) => {
-  // ... your existing createEvent code ...
+  try {
+    const { title, date, location, description, clubId } = req.body;
+    if (!title || !date || !location || !clubId) {
+      return res.status(400).json({ message: 'title, date, location, clubId are required' });
+    }
+    const ev = await Event.create({
+      title,
+      date: new Date(date),
+      location,
+      description: description || '',
+      clubId
+    });
+    res.status(201).json(ev);
+  } catch (err) {
+    console.error('Create event error:', err);
+    res.status(400).json({ message: err.message });
+  }
 };
 
 // Update event — remain unchanged
 exports.updateEvent = async (req, res) => {
-  // ... your existing updateEvent code ...
+  try {
+    const { title, date, location, description } = req.body;
+    const updates = {};
+    if (title !== undefined) updates.title = title;
+    if (date !== undefined) updates.date = new Date(date);
+    if (location !== undefined) updates.location = location;
+    if (description !== undefined) updates.description = description;
+
+    const ev = await Event.findByIdAndUpdate(
+      req.params.id,
+      { $set: updates },
+      { new: true, runValidators: true }
+    );
+    if (!ev) return res.status(404).json({ message: 'Event not found' });
+    res.json(ev);
+  } catch (err) {
+    console.error('Update event error:', err);
+    res.status(400).json({ message: err.message });
+  }
 };
 
 // Delete event — remain unchanged
 exports.deleteEvent = async (req, res) => {
-  // ... your existing deleteEvent code ...
+  try {
+    const ev = await Event.findByIdAndDelete(req.params.id);
+    if (!ev) return res.status(404).json({ message: 'Event not found' });
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Delete event error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
 };
 
 // Upload photos — remain unchanged

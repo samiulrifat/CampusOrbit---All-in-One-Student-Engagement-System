@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthProvider';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api';
 import './ScheduleMeeting.css';
 
 function ScheduleMeeting() {
-  const { user, loading, token } = useAuth();
+  const { user } = useAuth();
 
   const [title, setTitle] = useState('');
   const [agenda, setAgenda] = useState('');
@@ -17,13 +17,10 @@ function ScheduleMeeting() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  const API_URL = "http://localhost:5000/api/clubs";
-
   useEffect(() => {
-    // Fetch all clubs for club selection dropdown
-    fetch('http://localhost:5000/api/clubs')
-      .then(res => res.json())
-      .then(setClubs)
+    // Fetch all clubs for dropdown
+    api.get('/clubs')
+      .then(res => setClubs(res.data))
       .catch(() => setClubs([]));
   }, []);
 
@@ -38,15 +35,13 @@ function ScheduleMeeting() {
     }
 
     try {
-      const res = await axios.post('http://localhost:5000/api/meetings', {
+      await api.post('/meetings', {
         clubId,
         organizerId: user._id,
         title,
         agenda,
         location,
         scheduledAt,
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
 
       setMessage('Meeting scheduled successfully!');

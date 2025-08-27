@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { getMyClubs } from "../../api";
 import "./Member.css";
-
-const CLUBS_API = "http://localhost:5000/api/clubs/user";
 
 const Members = () => {
   const [clubs, setClubs] = useState([]);
@@ -18,11 +16,9 @@ const Members = () => {
     }
     const fetchClubs = async () => {
       try {
-        const res = await axios.get(CLUBS_API, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setClubs(res.data);
-        if (res.data.length > 0) setSelectedClub(res.data[0]);
+        const data = await getMyClubs();
+        setClubs(data);
+        if (data.length > 0) setSelectedClub(data[0]);
         setError("");
       } catch (err) {
         console.error("Error fetching clubs:", err.response?.data || err);

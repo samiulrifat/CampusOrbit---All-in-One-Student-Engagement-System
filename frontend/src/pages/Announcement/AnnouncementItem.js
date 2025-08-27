@@ -1,20 +1,20 @@
 import React from 'react';
-import axios from 'axios';
+import api from '../../api';
 
-const ANNOUNCEMENTS_API = 'http://localhost:5000/api/announcements';
-
-const AnnouncementItem = ({ announcement, user, clubId }) => {
+const AnnouncementItem = ({ announcement, user, clubId, onDelete }) => {
   const userRole = user?.role || '';
   const canDelete = ['officer', 'club_admin'].includes(userRole);
 
   const handleDelete = async () => {
     if (!window.confirm('Are you sure you want to delete this announcement?')) return;
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`${ANNOUNCEMENTS_API}/${clubId}/${announcement._id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      window.location.reload();
+      await api.delete(`/announcements/${clubId}/${announcement._id}`);
+      // Instead of forcing a full reload, let parent refresh
+      if (onDelete) {
+        onDelete(announcement._id);
+      } else {
+        window.location.reload();
+      }
     } catch (err) {
       console.error('Failed to delete announcement:', err);
       alert(err.response?.data?.message || 'Failed to delete announcement');

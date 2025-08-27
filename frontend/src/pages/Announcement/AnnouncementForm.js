@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-
-const ANNOUNCEMENTS_API = 'http://localhost:5000/api/announcements';
+import api from '../../api'; 
 
 const AnnouncementForm = ({ clubId, onCreate }) => {
   const [title, setTitle] = useState('');
@@ -14,20 +12,16 @@ const AnnouncementForm = ({ clubId, onCreate }) => {
     setPosting(true);
 
     try {
-      const token = localStorage.getItem('token');
-      await axios.post(
-        `${ANNOUNCEMENTS_API}/${clubId}`,
-        { title, content },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await api.post(`/announcements/${clubId}`, { title, content });
       setTitle('');
       setContent('');
       if (onCreate) onCreate();
     } catch (err) {
       console.error('Failed to post announcement:', err);
       alert(err.response?.data?.message || 'Failed to post announcement');
+    } finally {
+      setPosting(false);
     }
-    setPosting(false);
   };
 
   return (

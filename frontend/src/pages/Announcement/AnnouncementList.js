@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { getAnnouncements } from '../../api';
 import useAuth from '../../hooks/useAuth';
 import AnnouncementItem from './AnnouncementItem';
-
-const ANNOUNCEMENTS_API = 'http://localhost:5000/api/announcements';
 
 const AnnouncementList = ({ clubId, refresh }) => {
   const { user } = useAuth();
@@ -13,11 +11,8 @@ const AnnouncementList = ({ clubId, refresh }) => {
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const res = await axios.get(`${ANNOUNCEMENTS_API}/${clubId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setAnnouncements(res.data);
+          const data = await getAnnouncements(clubId);
+          setAnnouncements(data);
       } catch (err) {
         console.error('Failed to fetch announcements:', err);
       } finally {

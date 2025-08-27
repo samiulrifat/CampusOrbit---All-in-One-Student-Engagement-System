@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import api from '../../api';  // import shared axios instance
 import './Register.css';
 
 function Register() {
@@ -16,18 +17,12 @@ function Register() {
     setSuccess('');
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password, role })
+      await api.post('/auth/register', {
+        name,
+        email,
+        password,
+        role,
       });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || 'Registration failed');
-        return;
-      }
 
       setSuccess('Registration successful! You can now log in.');
       setName('');
@@ -35,7 +30,7 @@ function Register() {
       setPassword('');
       setRole('student');
     } catch (err) {
-      setError('Something went wrong');
+      setError(err.response?.data?.error || 'Registration failed');
     }
   };
 

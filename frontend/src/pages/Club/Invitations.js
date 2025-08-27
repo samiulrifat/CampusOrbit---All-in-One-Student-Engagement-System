@@ -1,33 +1,23 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import axios from 'axios';
+import { getInvitations, acceptInvite } from '../../api';
 import useAuth from '../../hooks/useAuth';
 import './Invitations.css';
 
 const Invitations = () => {
   const { user } = useAuth();
   const [invitations, setInvitations] = useState([]);
-  const token = localStorage.getItem('token');
 
   const fetchInvitations = useCallback(async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/clubs/invitations/user', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setInvitations(res.data);
+      setInvitations(await getInvitations());
     } catch (err) {
       console.error('Error fetching invitations:', err.response?.data || err);
     }
-  }, [token]); // dependency on token
+  }, []); // dependency on token
 
   const acceptInvitation = async (invitationId) => {
     try {
-      await axios.patch(
-        `http://localhost:5000/api/clubs/invitations/${invitationId}/accept`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      fetchInvitations(); // refresh list
+      await acceptInvite(invitationId);
     } catch (err) {
       console.error('Error accepting invitation:', err.response?.data || err);
     }

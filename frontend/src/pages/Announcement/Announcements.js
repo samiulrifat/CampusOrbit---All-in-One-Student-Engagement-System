@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import { getClubs } from '../../api';
 import AnnouncementForm from './AnnouncementForm';
 import AnnouncementList from './AnnouncementList';
 import useAuth from "../../hooks/useAuth";
@@ -10,23 +10,19 @@ const Announcements = () => {
   const [clubs, setClubs] = useState([]);
   const [selectedClub, setSelectedClub] = useState(null);
   const [refreshCounter, setRefreshCounter] = useState(0);
-
-  const API_URL = "http://localhost:5000/api/clubs";
   const token = localStorage.getItem("token");
 
   const fetchClubs = useCallback(async () => {
     try {
-      const res = await axios.get(API_URL, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setClubs(res.data);
+        const data = await getClubs();
+        setClubs(data);
     } catch (err) {
       console.error("Error fetching clubs:", err.response?.data || err);
       if (err.response?.status === 401) {
         localStorage.removeItem("token");
       }
     }
-  }, [API_URL, token]);
+  }, []);
 
   useEffect(() => {
     if (user && token) {

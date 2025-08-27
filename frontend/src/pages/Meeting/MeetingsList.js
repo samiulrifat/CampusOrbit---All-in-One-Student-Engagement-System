@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthProvider';
 import { Link } from 'react-router-dom';
+import api from '../../api';
 import './MeetingsList.css';
 
 function MeetingsList() {
-  const { user, loading, token } = useAuth();
+  const { user, loading } = useAuth();
 
   const [meetings, setMeetings] = useState([]);
   const [loadingMeetings, setLoadingMeetings] = useState(false);
@@ -12,7 +13,7 @@ function MeetingsList() {
 
   useEffect(() => {
     if (loading) return;
-    if (!user || !token) return;
+    if (!user) return;
 
     const fetchAllMeetings = async () => {
       setLoadingMeetings(true);
@@ -20,36 +21,27 @@ function MeetingsList() {
         let allMeetings = [];
 
         for (const club of user.clubsJoined || []) {
-          const res = await fetch(`http://localhost:5000/api/meetings/${club}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (res.ok) {
-            const data = await res.json();
-            allMeetings = allMeetings.concat(data);
-          }
+          const { data } = await api.get(`/meetings/${club}`);
+          allMeetings = allMeetings.concat(data);
         }
 
         setMeetings(allMeetings);
       } catch (error) {
         console.error(error);
         setMessage('Failed to load meetings');
+      } finally {
+        setLoadingMeetings(false);
       }
-      setLoadingMeetings(false);
     };
 
     fetchAllMeetings();
-  }, [user, token, loading]);
+  }, [user, loading]);
 
   const sendInvites = async (meetingId) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/meetings/${meetingId}/invite`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
+      const { data } = await api.post(`/meetings/${meetingId}/invite`);
       setMessage(data.message || data.error);
-      // Refresh meetings list after sending invites
-      // (Optionally, call fetchAllMeetings here if lifted)
+      // Optionally refresh meetings here
     } catch (err) {
       console.error(err);
     }
@@ -57,24 +49,17 @@ function MeetingsList() {
 
   const markAttendance = async (meetingId) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/meetings/${meetingId}/attend`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ userId: user._id }),
+      const { data } = await api.post(`/meetings/${meetingId}/attend`, {
+        userId: user._id,
       });
-      const data = await res.json();
       setMessage(data.message || data.error);
-      // Optionally refresh meetings list after marking attendance
+      // Optionally refresh meetings here
     } catch (err) {
       console.error(err);
     }
   };
 
   if (loading || loadingMeetings) return <div>Loading meetings...</div>;
-
   if (!user) return <div>Please login to view meetings.</div>;
 
   return (
@@ -87,7 +72,6 @@ function MeetingsList() {
         </div>
 
         {message && <p className="info-msg">{message}</p>}
-
         {meetings.length === 0 && <p>No meetings found.</p>}
 
         {meetings.map((meeting) => (

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import useAuth from "../../hooks/useAuth";
+import { useAuth } from "../../context/AuthProvider"; 
+import api from "../../api"; 
 import "./Login.css";
 
 function Login() {
@@ -15,23 +16,16 @@ function Login() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      // use axios instance (baseURL '/api')
+      const { data } = await api.post("/auth/login", { email, password });
 
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "Login failed");
-        return;
-      }
-
+      // call AuthProvider.login to store token + fetch /auth/me
       await login(data.token);
+
       navigate("/");
     } catch (err) {
-      console.error(err);
-      setError("Something went wrong");
+      console.error("Login error:", err);
+      setError(err.response?.data?.error || "Login failed");
     }
   };
 

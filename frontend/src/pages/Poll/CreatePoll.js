@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import api from '../../api'; 
 import './CreatePoll.css';
 
 function CreatePoll() {
@@ -11,9 +12,8 @@ function CreatePoll() {
 
   useEffect(() => {
     // Fetch all clubs for club selection dropdown
-    fetch('http://localhost:5000/api/clubs')
-      .then(res => res.json())
-      .then(setClubs)
+    api.get('/clubs')
+      .then(res => setClubs(res.data))
       .catch(() => setClubs([]));
   }, []);
 
@@ -23,10 +23,7 @@ function CreatePoll() {
     setOptions(newOptions);
   };
 
-  const addOption = () => {
-    setOptions([...options, '']);
-  };
-
+  const addOption = () => setOptions([...options, '']);
   const removeOption = (index) => {
     if (options.length > 2) {
       setOptions(options.filter((_, i) => i !== index));
@@ -45,34 +42,18 @@ function CreatePoll() {
     }
 
     try {
-      const token = localStorage.getItem('token');  // Assuming JWT token stored here for auth
-
-      const res = await fetch('http://localhost:5000/api/polls', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          clubId,
-          question,
-          options: options.map(opt => ({ text: opt })) // Options as objects with text keys
-        })
+      await api.post('/polls', {
+        clubId,
+        question,
+        options: options.map(opt => ({ text: opt })),
       });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || 'Failed to create poll');
-        return;
-      }
 
       setMessage('Poll created successfully!');
       setQuestion('');
       setOptions(['', '']);
       setClubId('');
     } catch (err) {
-      setError('Something went wrong: ' + err.message);
+      setError(err.response?.data?.error || 'Failed to create poll');
     }
   };
 

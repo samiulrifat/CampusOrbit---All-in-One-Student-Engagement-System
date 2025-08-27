@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { getClubs, createClub, inviteToClub, removeFromClub, deleteClub } from "../../api";
 import "./ClubManagement.css";
 
 const ClubManagement = () => {
@@ -8,13 +8,6 @@ const ClubManagement = () => {
   const [selectedClub, setSelectedClub] = useState(null);
   const [inviteEmail, setInviteEmail] = useState("");
 
-  const API_URL = "http://localhost:5000/api/clubs";
-  const token = localStorage.getItem("token");
-
-  const authHeaders = {
-    headers: { Authorization: `Bearer ${token}` },
-  };
-
   // Fetch clubs when component loads
   useEffect(() => {
     fetchClubs();
@@ -22,8 +15,7 @@ const ClubManagement = () => {
 
   const fetchClubs = async () => {
     try {
-      const res = await axios.get(API_URL);
-      setClubs(res.data);
+      setClubs(await getClubs());
     } catch (err) {
       console.error("Error fetching clubs:", err.response?.data || err);
     }
@@ -33,12 +25,8 @@ const ClubManagement = () => {
   const handleCreateClub = async () => {
     if (!newClubName.trim()) return;
     try {
-      const res = await axios.post(
-        API_URL,
-        { name: newClubName },
-        authHeaders
-      );
-      setClubs([...clubs, res.data.club]);
+        const created = await createClub({ name: newClubName });
+        setClubs([...clubs, created.club ?? created]);
       setNewClubName("");
     } catch (err) {
       console.error("Error creating club:", err.response?.data || err);
@@ -49,13 +37,10 @@ const ClubManagement = () => {
   const handleAddMember = async () => {
     if (!inviteEmail.trim() || !selectedClub) return;
     try {
-      const res = await axios.post(
-        `${API_URL}/${selectedClub._id}/invite`,
-        { email: inviteEmail },
-        authHeaders
-      );
-      setSelectedClub(res.data.club);
-      setClubs(clubs.map(c => c._id === res.data.club._id ? res.data.club : c));
+      const result = await inviteToClub(selectedClub._id, { email: inviteEmail });
+      const updated = result.club ?? result;
+      setSelectedClub(updated);
+      setClubs(clubs.map(c => c._id === updated._id ? updated : c));
       setInviteEmail("");
     } catch (err) {
       console.error("Error adding member:", err.response?.data || err);
@@ -65,12 +50,10 @@ const ClubManagement = () => {
   // Remove member
   const handleRemoveMember = async (userId) => {
     try {
-      const res = await axios.delete(
-        `${API_URL}/${selectedClub._id}/remove`,
-        { ...authHeaders, data: { userId } }
-      );
-      setSelectedClub(res.data.club);
-      setClubs(clubs.map(c => c._id === res.data.club._id ? res.data.club : c));
+      const result = await removeFromClub(selectedClub._id, userId);
+      const updated = result.club ?? result;
+      setSelectedClub(updated);
+      setClubs(clubs.map(c => c._id === updated._id ? updated : c));
     } catch (err) {
       console.error("Error removing member:", err.response?.data || err);
     }
@@ -79,7 +62,7 @@ const ClubManagement = () => {
   // Delete club
   const handleDeleteClub = async (clubId) => {
     try {
-      await axios.delete(`${API_URL}/${clubId}`, authHeaders);
+      await deleteClub(clubId);
       setClubs(clubs.filter(c => c._id !== clubId));
       if (selectedClub?._id === clubId) setSelectedClub(null);
     } catch (err) {

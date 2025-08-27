@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import useAuth from "../../hooks/useAuth";
-import axios from "axios";
+import { getMyClubs } from "../../api";
 import logo from "../../assets/logo.png";
 import "./Navbar.css";
 
@@ -14,19 +14,16 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
-  const API_URL = "http://localhost:5000/api/clubs/user";
 
   // Fetch user clubs
   useEffect(() => {
     if (!user || !token) return;
     const fetchClubs = async () => {
       try {
-        const res = await axios.get(API_URL, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setClubs(res.data);
-        if (res.data.length > 0) setSelectedClub(res.data[0]);
-      } catch (err) {
+        const data = await getMyClubs();
+        setClubs(data);
+        if (data?.length > 0) setSelectedClub(data[0]);
+      }catch (err) {
         console.error("Error fetching clubs:", err.response?.data || err);
         if (err.response?.status === 401) {
           localStorage.removeItem("token");

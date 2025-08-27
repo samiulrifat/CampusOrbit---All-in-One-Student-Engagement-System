@@ -32,6 +32,9 @@ router.get('/:eventId/attendees', verifyToken, requireRole(['clubAdmin']), event
 // Organizer (club admin) removes an attendee
 router.delete('/:eventId/attendees/:userId', verifyToken, requireRole(['clubAdmin']), eventController.removeAttendee);
 
+// NEW: Filtered events endpoint calling controller method (public)
+router.get('/filter', eventController.getFilteredEvents);
+
 // GET event by ID (authenticated users)
 router.get('/:id', verifyToken, eventController.getEventById);
 
@@ -115,7 +118,5 @@ router.post('/:id/photos', verifyToken, requireRole(['clubAdmin']), upload.array
   }
 });
 
-// NEW: Filtered events endpoint calling controller method (public)
-router.get('/filter', eventController.getFilteredEvents);
 
 module.exports = router;

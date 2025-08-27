@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import api from '../../api';
 import './PollsList.css';
 
 function PollsList() {
@@ -16,40 +17,30 @@ function PollsList() {
 
   const fetchPolls = async (clubId) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/polls/${clubId}`);
-      const data = await res.json();
+      const { data } = await api.get(`/polls/${clubId}`);
       setPolls(data);
     } catch (err) {
-      console.error(err);
+      console.error('Error fetching polls:', err);
     }
   };
 
   const vote = async (pollId, optionIndex) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/polls/${pollId}/vote`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ optionIndex })
-      });
-      const data = await res.json();
+      const { data } = await api.post(`/polls/${pollId}/vote`, { optionIndex });
       setMessage(data.message || data.error);
       fetchPolls(clubId);
     } catch (err) {
-      console.error(err);
+      console.error('Error voting:', err);
     }
   };
 
   const closePoll = async (pollId) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/polls/${pollId}/close`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      const data = await res.json();
+      const { data } = await api.patch(`/polls/${pollId}/close`);
       setMessage(data.message || data.error);
       fetchPolls(clubId);
     } catch (err) {
-      console.error(err);
+      console.error('Error closing poll:', err);
     }
   };
 
@@ -69,8 +60,8 @@ function PollsList() {
                   <li key={idx}>
                     {opt.text} — {opt.votes} votes
                     {poll.isOpen && (
-                      <button 
-                        className="vote-btn" 
+                      <button
+                        className="vote-btn"
                         onClick={() => vote(poll._id, idx)}
                       >
                         Vote
@@ -80,7 +71,12 @@ function PollsList() {
                 ))}
               </ul>
               {poll.isOpen ? (
-                <button className="close-btn" onClick={() => closePoll(poll._id)}>Close Poll</button>
+                <button
+                  className="close-btn"
+                  onClick={() => closePoll(poll._id)}
+                >
+                  Close Poll
+                </button>
               ) : (
                 <p className="closed-msg">Poll Closed</p>
               )}

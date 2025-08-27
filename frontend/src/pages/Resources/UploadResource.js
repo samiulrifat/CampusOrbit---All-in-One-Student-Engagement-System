@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api';
 import './Resources.css';
 
 const UploadResource = ({ onUploadSuccess }) => {
@@ -10,9 +10,6 @@ const UploadResource = ({ onUploadSuccess }) => {
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
   const [uploading, setUploading] = useState(false);
-
-  const token = localStorage.getItem('token');
-  const BACKEND_URL = "http://localhost:5000"; // your Express backend
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,11 +27,8 @@ const UploadResource = ({ onUploadSuccess }) => {
         formData.append("file", file);
         formData.append("title", title);
 
-        await axios.post(`${BACKEND_URL}/api/resources/upload/${clubId}`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`
-          }
+        await api.post(`/resources/upload/${clubId}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" }
         });
       } else {
         if (!title || !url) {
@@ -43,9 +37,7 @@ const UploadResource = ({ onUploadSuccess }) => {
           return;
         }
 
-        await axios.post(`${BACKEND_URL}/api/resources/link/${clubId}`, { title, url }, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.post(`/resources/link/${clubId}`, { title, url });
       }
 
       setTitle('');
@@ -55,10 +47,10 @@ const UploadResource = ({ onUploadSuccess }) => {
 
     } catch (error) {
       console.error('Resource upload failed:', error);
-      alert('Upload failed. Please try again.');
+      alert(error.response?.data?.message || 'Upload failed. Please try again.');
+    } finally {
+      setUploading(false);
     }
-
-    setUploading(false);
   };
 
   return (
