@@ -1,11 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Club = require('../models/Club');
-<<<<<<< HEAD
 const User = require('../models/User');
-=======
 
->>>>>>> whatever
 const {
   createClub,
   getClubs,
@@ -18,28 +15,22 @@ const {
 const { verifyToken, requireOfficer } = require('../middleware/auth');
 
 // User-specific routes
-<<<<<<< HEAD
 
-=======
 // ========================
 
 // Get clubs where user is a member or creator (protected)
->>>>>>> whatever
 router.get('/user', verifyToken, async (req, res) => {
   try {
     console.log('Entered /api/clubs/user route');
     console.log('Decoded user from token:', req.user);
 
     const userId = req.user.userId;
-
-<<<<<<< HEAD
     if (!userId) {
       console.log('No userId in token payload');
       return res.status(400).json({ error: 'User ID missing from token' });
     }
 
-=======
->>>>>>> whatever
+
     const clubs = await Club.find({
       $or: [
         { creatorId: userId },
@@ -83,15 +74,8 @@ router.post('/:clubId/members', verifyToken, requireOfficer, async (req, res) =>
     res.status(500).json({ error: 'Error adding member to club' });
   }
 });
-
-// Public routes
-<<<<<<< HEAD
-
-=======
-// ========================
-
 // Public route to get all club names for calendar or dropdown
->>>>>>> whatever
+
 router.get('/calendar', async (req, res) => {
   try {
     const clubs = await Club.find({}, 'name');
@@ -107,11 +91,10 @@ router.get('/', getClubs);
 
 // Get one club by ID (calls controller)
 router.get('/:id', getClubById);
-<<<<<<< HEAD
-=======
+
 
 // Get club invitations for user (protected and populated)
->>>>>>> whatever
+
 router.get("/invitations/user", verifyToken, async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -132,15 +115,9 @@ router.get("/invitations/user", verifyToken, async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
-
-=======
-// ========================
-// Authenticated actions
-// ========================
 
 // Create club (protected)
->>>>>>> whatever
+
 router.post('/', verifyToken, createClub);
 
 // Update club profile (protected, officer only)
