@@ -1,64 +1,123 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import useAuth from '../../hooks/useAuth';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
-import './Dashboard.css';
 
 function Dashboard() {
-  const { user, loading } = useAuth();
+  const { user, loading, token } = useAuth();
+  const [clubs, setClubs] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
+  const [meetings, setMeetings] = useState([]);
+  const [polls, setPolls] = useState([]);
 
-  if (loading) return <p className="loading-text">Loading...</p>;
-  if (!user) return <p className="unauth-text">You are not logged in.</p>;
+  const fetchMemberClubs = async () => {
+    if (!user?._id) return [];
+    try {
+      const res = await axios.get(`http://localhost:5000/api/clubs?userId=${user._id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setClubs(res.data || []);
+      return (res.data || []).map(c => String(c._id));
+    } catch (err) {
+      console.error('Failed to fetch clubs:', err);
+      return [];
+    }
+  };
+
+  const fetchAnnouncements = async (clubIds) => {
+    if (!clubIds.length) return;
+    try {
+      const res = await axios.get('http://localhost:5000/api/announcements', {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { clubIds: clubIds.join(',') }
+      });
+      setAnnouncements(res.data || []);
+    } catch (err) {
+      console.error('Failed to fetch announcements:', err);
+    }
+  };
+
+  const fetchMeetings = async (clubIds) => {
+    if (!clubIds.length) return;
+    try {
+      const res = await axios.get('http://localhost:5000/api/meetings', {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { clubIds: clubIds.join(',') }
+      });
+      setMeetings(res.data || []);
+    } catch (err) {
+      console.error('Failed to fetch meetings:', err);
+    }
+  };
+
+  const fetchPolls = async (clubIds) => {
+    if (!clubIds.length) return;
+    try {
+      const res = await axios.get('http://localhost:5000/api/polls', {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { clubIds: clubIds.join(',') }
+      });
+      setPolls(res.data || []);
+    } catch (err) {
+      console.error('Failed to fetch polls:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (loading) return;
+    if (!user || !token) return;
+
+    // Non-admin member dashboard
+    if (user.role !== 'club_admin') {
+      fetchMemberClubs().then((clubIds) => {
+        if (clubIds.length > 0) {
+          Promise.allSettled([
+            fetchAnnouncements(clubIds),
+            fetchMeetings(clubIds),
+            fetchPolls(clubIds)
+          ]).then(() => {});
+        }
+      });
+    }
+  }, [user, token, loading]);
+
+  if (loading) return <div>Loading...</div>;
+  if (!user) return <div>Please log in to view your dashboard</div>;
 
   const isAdmin = user.role === 'club_admin';
 
   return (
     <div className="dashboard-page">
-      <div className="dashboard-card">
-        <h1 className="dashboard-welcome">Welcome, {user.name} 👋</h1>
-        <p className="dashboard-subtitle">Here’s your CampusOrbit overview</p>
-
-        <div className="user-info">
-          <p><strong>Email:</strong> {user.email}</p>
-          <p><strong>Role:</strong> {user.role}</p>
-          {user.createdAt && (
-            <p><strong>Member Since:</strong> {new Date(user.createdAt).toLocaleDateString()}</p>
-          )}
+      <h1>Welcome, {user.name}</h1>
+      {isAdmin ? (
+        <div>
+          {/* Existing admin actions here */}
         </div>
+      ) : (
+        <div>
+          <h2>Your Clubs</h2>
+          {clubs.map((club) => (
+            <div key={club._id}>
+              <h3>{club.name}</h3>
+            </div>
+          ))}
 
-        <div className="quick-actions">
-          {isAdmin ? (
-            <>
-              <Link to="/clubs/manage" className="action-card">
-                <h3>⚙ Manage Clubs</h3>
-                <p>Update profiles, members & invites</p>
-              </Link>
-              <Link to="/schedule-meeting" className="action-card">
-                <h3>📅 Schedule Meeting</h3>
-                <p>Plan and organize club meetings</p>
-              </Link>
-              <Link to="/create-poll" className="action-card">
-                <h3>🗳 Create Poll</h3>
-                <p>Engage members with quick polls</p>
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link to="/clubs" className="action-card">
-                <h3>🏛 My Clubs</h3>
-                <p>View and join campus clubs</p>
-              </Link>
-              <Link to="/events" className="action-card">
-                <h3>🎉 Events</h3>
-                <p>Explore upcoming campus events</p>
-              </Link>
-              <Link to="/polls" className="action-card">
-                <h3>🗳 Polls</h3>
-                <p>Vote and share your opinion</p>
-              </Link>
-            </>
-          )}
+          <h2>Announcements</h2>
+          {announcements.map(a => (
+            <div key={a._id}>{a.title}</div>
+          ))}
+
+          <h2>Meetings</h2>
+          {meetings.map(m => (
+            <div key={m._id}>{m.title} - {new Date(m.scheduledAt).toLocaleString()}</div>
+          ))}
+
+          <h2>Polls</h2>
+          {polls.map(p => (
+            <div key={p._id}>{p.title}</div>
+          ))}
         </div>
-      </div>
+      )}
     </div>
   );
 }

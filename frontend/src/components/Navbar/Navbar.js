@@ -162,6 +162,12 @@ const Navbar = () => {
                   >
                     Announcements
                   </Link>
+                  <Link to={`/clubs/meetings/${selectedClub?._id || clubs[0]?._id}`} className="navbar-link" onClick={() => setIsOpen(false)}>
+                    Meetings
+                  </Link>
+                  <Link to={`/clubs/polls/${selectedClub?._id || clubs[0]?._id}`} className="navbar-link" onClick={() => setIsOpen(false)}>
+                    Polls
+                  </Link>
                 </>
               )}
 
@@ -180,6 +186,7 @@ const Navbar = () => {
               <Link to="/register" className="btn-tartiary" onClick={() => setIsOpen(false)}>
                 Register
               </Link>
+              
             </>
           )}
         </div>

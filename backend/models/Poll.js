@@ -1,25 +1,38 @@
 const mongoose = require('mongoose');
 
-const OptionSchema = new mongoose.Schema({
-  text: { type: String, required: true },
-  votes: { type: Number, default: 0 }
-});
-
-const PollSchema = new mongoose.Schema({
-  clubId: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Club', 
-    required: true 
+const optionSchema = new mongoose.Schema(
+  {
+    text: { type: String, required: true, trim: true },
+    votes: { type: Number, default: 0 },
   },
-  creatorId: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'User', 
-    required: true 
-  },
-  question: { type: String, required: true },
-  options: { type: [OptionSchema], required: true },
-  createdAt: { type: Date, default: Date.now },
-  isOpen: { type: Boolean, default: true }
-});
+  { _id: false }
+);
 
-module.exports = mongoose.model('Poll', PollSchema);
+const pollSchema = new mongoose.Schema(
+  {
+    clubId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Club',
+      required: true,
+      index: true,
+    },
+    creatorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      index: true,
+    },
+    question: { type: String, required: true, trim: true },
+    options: {
+      type: [optionSchema],
+      required: true,
+      validate: v => Array.isArray(v) && v.length >= 2,
+    },
+    isOpen: { type: Boolean, default: true, index: true },
+    // Track one vote per user
+    voterIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  },
+  { timestamps: true }
+);
+
+module.exports = mongoose.model('Poll', pollSchema);

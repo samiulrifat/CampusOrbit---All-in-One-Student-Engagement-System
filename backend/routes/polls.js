@@ -1,101 +1,145 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const Poll = require('../models/Poll');
 const Club = require('../models/Club');
-const { verifyToken, requireRole } = require('../middleware/auth');
+const { verifyToken } = require('../middleware/auth');
+const getUserClubs = require('../middleware/getUserClubs');
 
+const asyncH = (fn) => (req, res, next) =>
+  Promise.resolve(fn(req, res, next)).catch(next);
 
-// Create a new poll (only clubAdmin)
-router.post('/', verifyToken, requireRole(['clubAdmin']), async (req, res) => {
-  try {
-    const { clubId, question, options } = req.body;
-    const creatorId = req.user.userId || req.user._id;
+// Helper: check if the user is club_admin or officer for a club
+async function isOfficerOrAdmin(userId, clubId) {
+  if (!mongoose.isValidObjectId(clubId)) return false;
+  const club = await Club.findById(clubId).select('members').lean();
+  if (!club) return false;
 
-    // Authorization check: only club creator may proceed
-    const club = await Club.findById(clubId);
-    if (!club || String(club.creatorId) !== String(creatorId)) {
-      return res.status(403).json({ error: "Not authorized for this club." });
-    }
+  const uid = String(userId);
+  const member = (club.members || []).find((m) => {
+    const mid =
+      (m?.userId && m.userId.toString && m.userId.toString()) ||
+      (m && m.toString && m.toString());
+    return String(mid) === uid;
+  });
 
-    if (!clubId || !creatorId || !question || !options || options.length < 2) {
-      return res.status(400).json({ error: 'Please provide clubId, creatorId, question, and at least 2 options' });
-    }
+  const role = member?.role || null;
+  return role === 'club_admin' || role === 'officer';
+}
 
-    const poll = new Poll({
-      clubId,
-      creatorId,
-      question,
-      options
+// Batch list for dashboard: GET /api/polls?clubIds=a,b,c
+router.get('/', verifyToken, asyncH(async (req, res) => {
+  const ids = String(req.query.clubIds || '')
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean)
+    .map(String);
+
+  if (ids.length === 0) return res.json([]);
+
+  const polls = await Poll.find({ clubId: { $in: ids } })
+    .sort({ createdAt: -1 })
+    .lean();
+
+  return res.json(polls);
+}));
+
+// Per-club list for navbar: GET /api/polls/:clubId (members only)
+router.get('/:clubId', verifyToken, getUserClubs, asyncH(async (req, res) => {
+  const { clubId } = req.params;
+  const memberships = Array.isArray(req.userClubs) ? req.userClubs.map(String) : [];
+  if (!memberships.includes(String(clubId))) {
+    return res.status(403).json({ error: 'Access denied: not a member of this club' });
+  }
+  const polls = await Poll.find({ clubId }).sort({ createdAt: -1 }).lean();
+  return res.json(polls);
+}));
+
+// Create a poll (club_admin/officer)
+router.post('/', verifyToken, asyncH(async (req, res) => {
+  const { clubId, question, options } = req.body;
+  const creatorId = req.user.userId || req.user._id;
+
+  if (!clubId || !creatorId || !question || !Array.isArray(options) || options.length < 2) {
+    return res.status(400).json({
+      error: 'Please provide clubId, creatorId, question, and at least 2 options',
     });
-
-    await poll.save();
-
-    res.status(201).json({ message: 'Poll created', poll });
-  } catch (err) {
-    console.error('Error creating poll:', err);
-    res.status(500).json({ error: 'Server error' });
   }
-});
 
+  const allowed = await isOfficerOrAdmin(creatorId, clubId);
+  if (!allowed) return res.status(403).json({ error: 'Not authorized for this club.' });
 
-// Get all polls for a club (require login)
-router.get('/:clubId', verifyToken, async (req, res) => {
-  try {
-    const { clubId } = req.params;
-    const polls = await Poll.find({ clubId }).sort({ createdAt: -1 });
-    res.json(polls);
-  } catch (err) {
-    console.error('Error fetching polls:', err);
-    res.status(500).json({ error: 'Server error' });
+  const normalizedOptions = options.map((opt) =>
+    typeof opt === 'string' ? { text: opt, votes: 0 } : opt
+  );
+
+  const poll = new Poll({
+    clubId,
+    creatorId,
+    question,
+    options: normalizedOptions,
+    isOpen: true,
+    voterIds: [],
+  });
+
+  await poll.save();
+  return res.status(201).json({ message: 'Poll created', poll });
+}));
+
+// Vote (members; one vote per user)
+router.post('/:pollId/vote', verifyToken, asyncH(async (req, res) => {
+  const { pollId } = req.params;
+  const { optionIndex } = req.body;
+  const voterId = req.user.userId || req.user._id;
+
+  const poll = await Poll.findById(pollId);
+  if (!poll) return res.status(404).json({ error: 'Poll not found' });
+  if (!poll.isOpen) return res.status(400).json({ error: 'Poll is closed' });
+
+  // Ensure the voter is a member of the poll's club
+  const member = await Club.findOne({
+    _id: poll.clubId,
+    $or: [
+      { 'members.userId': voterId }, // subdoc { userId, role }
+      { members: voterId },          // raw ObjectId
+    ],
+  }).select('_id');
+
+  if (!member) return res.status(403).json({ error: 'Not a member of this club' });
+
+  if (typeof optionIndex !== 'number' || optionIndex < 0 || optionIndex >= poll.options.length) {
+    return res.status(400).json({ error: 'Invalid option index' });
   }
-});
 
-// Vote for an option (require login)
-router.post('/:pollId/vote', verifyToken, async (req, res) => {
-  try {
-    const { pollId } = req.params;
-    const { optionIndex } = req.body;
-
-    const poll = await Poll.findById(pollId);
-    if (!poll) return res.status(404).json({ error: 'Poll not found' });
-    if (!poll.isOpen) return res.status(400).json({ error: 'Poll is closed' });
-
-    if (optionIndex < 0 || optionIndex >= poll.options.length) {
-      return res.status(400).json({ error: 'Invalid option index' });
-    }
-
-    poll.options[optionIndex].votes += 1;
-    await poll.save();
-
-    res.json({ message: 'Vote recorded', poll });
-  } catch (err) {
-    console.error('Error voting on poll:', err);
-    res.status(500).json({ error: 'Server error' });
+  // Prevent double vote
+  const alreadyVoted = (poll.voterIds || []).some((id) => String(id) === String(voterId));
+  if (alreadyVoted) {
+    return res.status(400).json({ error: 'You have already voted on this poll' });
   }
-});
 
-// Close a poll (clubAdmin only)
-router.patch('/:pollId/close', verifyToken, requireRole(['clubAdmin']), async (req, res) => {
-  try {
-    const { pollId } = req.params;
+  poll.options[optionIndex].votes += 1;
+  poll.voterIds = poll.voterIds || [];
+  poll.voterIds.push(voterId);
+  await poll.save();
 
-    const poll = await Poll.findById(pollId);
-    if (!poll) return res.status(404).json({ error: 'Poll not found' });
+  return res.json({ message: 'Vote recorded', poll });
+}));
 
-    const club = await Club.findById(poll.clubId);
-    if (!club || String(club.creatorId) !== String(req.user.userId)) {
-      return res.status(403).json({ error: "Not authorized to close this poll." });
-    }
+// Close a poll (club_admin/officer)
+router.patch('/:pollId/close', verifyToken, asyncH(async (req, res) => {
+  const { pollId } = req.params;
+  const userId = req.user.userId || req.user._id;
 
-    poll.isOpen = false;
-    await poll.save();
+  const poll = await Poll.findById(pollId);
+  if (!poll) return res.status(404).json({ error: 'Poll not found' });
 
-    res.json({ message: 'Poll closed', poll });
-  } catch (err) {
-    console.error('Error closing poll:', err);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
+  const allowed = await isOfficerOrAdmin(userId, poll.clubId);
+  if (!allowed) return res.status(403).json({ error: 'Not authorized to close this poll.' });
 
+  poll.isOpen = false;
+  await poll.save();
+
+  return res.json({ message: 'Poll closed', poll });
+}));
 
 module.exports = router;

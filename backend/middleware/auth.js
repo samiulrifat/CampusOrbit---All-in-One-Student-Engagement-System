@@ -46,6 +46,7 @@ function requireRole(allowedRoles) {
 
 // Check if user is officer/admin of a club
 async function requireOfficer(req, res, next) {
+  console.log('requireOfficer middleware called');
   try {
     const clubId = req.params.clubId || req.params.id || req.body.clubId;
     if (!clubId) return res.status(400).json({ error: 'Club ID is required' });
