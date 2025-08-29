@@ -36,7 +36,11 @@ async function requireOfficer(req, res, next) {
     if (!req.user || !req.user.userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const Club = require('../models/Club'); // lazy require to avoid circular import
+
+    console.log('requireOfficer: checking clubId', clubId);
     const club = await Club.findById(clubId);
+    console.log('requireOfficer: club found', club);
+
     if (!club) return res.status(404).json({ error: 'Club not found' });
 
     // app-level club_admin bypass
@@ -44,7 +48,7 @@ async function requireOfficer(req, res, next) {
 
     // otherwise check membership role
     const member = club.members.find(m => String(m.userId) === String(req.user.userId));
-    if (member && (member.role === 'club_admin' || member.role === 'officer')) return next();
+    if (member && (['club_admin', 'officer', 'admin'].includes(member.role))) return next();
 
     return res.status(403).json({ error: 'Access denied: not club admin' });
   } catch (err) {
@@ -61,6 +65,7 @@ async function isClubMember(req, res, next) {
     if (!req.user || !req.user.userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const Club = require('../models/Club');
+
     const club = await Club.findById(clubId);
     if (!club) return res.status(404).json({ error: 'Club not found' });
 

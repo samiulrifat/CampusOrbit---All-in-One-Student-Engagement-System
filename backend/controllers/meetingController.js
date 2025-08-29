@@ -26,23 +26,32 @@ exports.createMeeting = async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
+    const meetingDate = new Date(scheduledAt);
+    if (isNaN(meetingDate)) {
+      return res.status(400).json({ error: 'Invalid scheduledAt date' });
+    }
+    console.debug('createMeeting - meetingDate parsed', meetingDate);
+
     const meeting = new Meeting({
       clubId,
       organizerId,
       title,
       agenda: agenda || '',
       location: location || '',
-      scheduledAt: new Date(scheduledAt),
+      scheduledAt: meetingDate,
     });
 
+    console.debug('createMeeting - before save');
     await meeting.save();
-    console.debug('createMeeting success', { meetingId: meeting._id });
+    console.debug('createMeeting - after save', { meetingId: meeting._id });
+
     return res.status(201).json({ message: 'Meeting created', meeting });
   } catch (err) {
     console.error('createMeeting error', err.stack || err);
     return res.status(500).json({ error: 'Server error', message: err.message });
   }
 };
+
 
 exports.getMeetingsByClub = async (req, res) => {
   try {
