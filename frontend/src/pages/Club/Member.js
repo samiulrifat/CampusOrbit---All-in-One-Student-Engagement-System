@@ -34,6 +34,49 @@ const Members = () => {
 
   const handleSelectClub = (club) => setSelectedClub(club);
 
+  const updateMemberRole = (clubId, memberId, role) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("Please log in to update member roles.");
+      return;
+    }
+    console.log(memberId);
+    const updateRole = async () => {
+      try {
+        await axios.post(`http://localhost:5000/api/clubs/user`, {
+          userId: memberId,
+          role: role,
+          clubId: clubId
+        }, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setClubs((prevClubs) =>
+          prevClubs.map((club) =>
+            club._id === clubId
+              ? {
+                  ...club,
+                  members: club.members.map((member) =>
+                    member.userId === memberId ? { ...member, role: role } : member
+                  )
+                }
+              : club
+          )
+        );
+        setSelectedClub((prevSelectedClub) => ({
+          ...prevSelectedClub,
+          members: prevSelectedClub.members.map((member) =>
+            member.userId === memberId ? { ...member, role: role } : member
+          )
+        }));
+        setError("");
+      } catch (err) {
+        console.error("Error updating member role:", err.response?.data || err);
+        setError(err.response?.data?.error || "Failed to update member role.");
+      }
+    };
+    updateRole();
+  };
+
   return (
     <div className="members-page">
       <h1>Club Dashboard</h1>
@@ -85,14 +128,38 @@ const Members = () => {
 
           <h3>Members</h3>
           {selectedClub.members && selectedClub.members.length > 0 ? (
-            <ul>
-              {selectedClub.members.map((member) => (
-                <li key={member._id}>
-                  <strong>{member.name || 'Unknown'}</strong> ({member.email}) — <em>{member.role}</em> (joined{" "}
-                  {new Date(member.joinedAt).toLocaleString()})
-                </li>
-              ))}
-            </ul>
+            <table className="members-table glass-card">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Joined At</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedClub.members.map((member) => (
+                  <tr key={member._id || member.userId || member.email}>
+                    <td>{member.name || 'Unknown'}</td>
+                    <td>{member.email}</td>
+                    <td>
+                      <select
+                        value={member.role}
+                        onChange={e => {
+                          updateMemberRole(selectedClub._id, member.userId, e.target.value);
+                        }}
+                        className="role-dropdown"
+                      >
+                        <option value="member">Member</option>
+                        <option value="officer">Officer</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                    </td>
+                    <td>{new Date(member.joinedAt).toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           ) : (
             <p>No members found.</p>
           )}

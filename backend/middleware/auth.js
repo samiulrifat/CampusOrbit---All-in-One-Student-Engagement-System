@@ -58,6 +58,8 @@ async function requireOfficer(req, res, next) {
       return res.status(403).json({ error: 'Access denied: not officer/admin' });
     }
 
+    req.club = club
+
     next();
   } catch (err) {
     console.error('Authorization error:', err);

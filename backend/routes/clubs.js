@@ -59,6 +59,24 @@ router.get('/user', verifyToken, async (req, res) => {
   }
 });
 
+//change the role of a user
+router.post('/user', verifyToken, requireOfficer, async (req, res) => {
+  const user = await User.findById(req.body.userId);
+  if (!user) return res.status(404).json({ error: 'User not found' });
+
+  try {
+    req.club.members = req.club.members.map(member => {
+      return member.userId.toString() === req.body.userId ? { ...member.toObject(), role: req.body.role } : member
+    });
+    await req.club.save();
+    res.json({ message: 'User role updated successfully', user });
+  } catch (err) {
+    console.error('Error updating user role:', err);
+    res.status(500).json({ error: 'Error updating user role' });
+  }
+
+})
+
 // Add member to a club (officer/admin only)
 router.post('/:clubId/members', verifyToken, requireOfficer, async (req, res) => {
   try {
