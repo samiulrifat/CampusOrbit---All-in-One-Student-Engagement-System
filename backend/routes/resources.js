@@ -38,6 +38,7 @@ router.post('/upload/:clubId', verifyToken, isClubMember, upload.single('file'),
       uploader: req.user.userId,
       type: 'file',
       title: req.body.title || req.file.originalname,
+      description: req.body.description,
       url: `/uploads/resources/${req.file.filename}`, 
       fileName: req.file.originalname,
     });
@@ -51,13 +52,14 @@ router.post('/upload/:clubId', verifyToken, isClubMember, upload.single('file'),
 // Add link resource
 router.post('/link/:clubId', verifyToken, isClubMember, async (req, res) => {
   try {
-    const { title, url } = req.body;
+    const { title, url, description } = req.body;
     if (!title || !url) return res.status(400).json({ message: 'Title and URL are required' });
     const resource = new Resource({
       clubId: req.params.clubId,
       uploader: req.user.userId,
       type: 'link',
       title,
+      description,
       url,
     });
     await resource.save();

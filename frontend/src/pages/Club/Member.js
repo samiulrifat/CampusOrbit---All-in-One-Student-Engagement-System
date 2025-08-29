@@ -43,22 +43,31 @@ const Members = () => {
     console.log(memberId);
     const updateRole = async () => {
       try {
-        await axios.post(`http://localhost:5000/api/clubs/user`, {
+        await axios.post('http://localhost:5000/api/clubs/user', {
           userId: memberId,
           role: role,
           clubId: clubId
         }, {
           headers: { Authorization: `Bearer ${token}` }
         });
+        await axios.post('http://localhost:5000/api/notifications', {
+          user: memberId,
+          type: "event-update",
+          title: "Role Change",
+          message: `Your role in the club has been changed to ${role}.`
+
+        }, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
         setClubs((prevClubs) =>
           prevClubs.map((club) =>
             club._id === clubId
               ? {
-                  ...club,
-                  members: club.members.map((member) =>
-                    member.userId === memberId ? { ...member, role: role } : member
-                  )
-                }
+                ...club,
+                members: club.members.map((member) =>
+                  member.userId === memberId ? { ...member, role: role } : member
+                )
+              }
               : club
           )
         );

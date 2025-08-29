@@ -8,6 +8,7 @@ const UploadResource = ({ onUploadSuccess }) => {
   const [type, setType] = useState('file');
   const [file, setFile] = useState(null);
   const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [url, setUrl] = useState('');
   const [uploading, setUploading] = useState(false);
 
@@ -29,6 +30,7 @@ const UploadResource = ({ onUploadSuccess }) => {
         const formData = new FormData();
         formData.append("file", file);
         formData.append("title", title);
+        formData.append("description", description);
 
         await axios.post(`${BACKEND_URL}/api/resources/upload/${clubId}`, formData, {
           headers: {
@@ -43,7 +45,7 @@ const UploadResource = ({ onUploadSuccess }) => {
           return;
         }
 
-        await axios.post(`${BACKEND_URL}/api/resources/link/${clubId}`, { title, url }, {
+        await axios.post(`${BACKEND_URL}/api/resources/link/${clubId}`, { title, url, description }, {
           headers: { Authorization: `Bearer ${token}` }
         });
       }
@@ -81,6 +83,17 @@ const UploadResource = ({ onUploadSuccess }) => {
             placeholder="Resource title"
             value={title}
             onChange={e => setTitle(e.target.value)}
+            className="form-input"
+            required={type === 'link'}
+          />
+        </label>
+        <label className="form-label">
+          Description:
+          <input
+            type="text"
+            placeholder="Resource title"
+            value={description}
+            onChange={e => setDescription(e.target.value)}
             className="form-input"
             required={type === 'link'}
           />

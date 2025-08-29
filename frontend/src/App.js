@@ -18,6 +18,7 @@ import ClubEventPage from './pages/Event/EventManager';
 import ClubWorkspace from './pages/Club/ClubWorkspace';
 import Achievements from './pages/Achievement/Achievements';
 import Announcements from './pages/Announcement/Announcements';
+import Notifications from './pages/Notifications/Notifications';
 import AnnouncementList from './pages/Announcement/AnnouncementList';
 import EventCalendar from './pages/Event/EventCalendar';
 import Dashboard from './pages/Dashboard/Dashboard';
@@ -55,6 +56,7 @@ function App() {
           <Route path="/clubs/achievements/:clubId" element={<PrivateRoute><Achievements /></PrivateRoute>} />
           <Route path="/clubs/announcements" element={<PrivateRoute><Announcements /></PrivateRoute>} />
           <Route path="/clubs/announcements/list/:clubId" element={<PrivateRoute><AnnouncementList /></PrivateRoute>} />
+          <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
           <Route path="/calendar" element={<PrivateRoute><EventCalendar /></PrivateRoute>} />
         </Routes>
         <Footer/>
