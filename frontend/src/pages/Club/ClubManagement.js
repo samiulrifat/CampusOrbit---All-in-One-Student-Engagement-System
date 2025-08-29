@@ -22,11 +22,7 @@ const ClubManagement = () => {
 
   const fetchClubs = async () => {
     try {
-<<<<<<< HEAD
       const res = await axios.get(API_URL, authHeaders);
-=======
-      const res = await axios.get(API_URL);
->>>>>>> origin/master
       setClubs(res.data);
     } catch (err) {
       console.error("Error fetching clubs:", err.response?.data || err);
@@ -42,7 +38,6 @@ const ClubManagement = () => {
         { name: newClubName },
         authHeaders
       );
-<<<<<<< HEAD
       const clubCreator = {
         userId: res.data.user._id,
         name: res.data.user.name,
@@ -50,9 +45,6 @@ const ClubManagement = () => {
         role: res.data.user.role
       };
       setClubs([...clubs, { ...res.data.club, members: [clubCreator] }]);
-=======
-      setClubs([...clubs, res.data.club]);
->>>>>>> origin/master
       setNewClubName("");
     } catch (err) {
       console.error("Error creating club:", err.response?.data || err);
@@ -68,7 +60,6 @@ const ClubManagement = () => {
         { email: inviteEmail },
         authHeaders
       );
-<<<<<<< HEAD
       const newUser = {
         userId: res.data.user._id,
         name: res.data.user.name,
@@ -77,10 +68,6 @@ const ClubManagement = () => {
       }
       setSelectedClub({...selectedClub, members: [...selectedClub.members, newUser] });
       setClubs(clubs.map(c => c._id === res.data.club._id ? { ...c, members: [...c.members, newUser] } : c));
-=======
-      setSelectedClub(res.data.club);
-      setClubs(clubs.map(c => c._id === res.data.club._id ? res.data.club : c));
->>>>>>> origin/master
       setInviteEmail("");
     } catch (err) {
       console.error("Error adding member:", err.response?.data || err);
@@ -94,13 +81,8 @@ const ClubManagement = () => {
         `${API_URL}/${selectedClub._id}/remove`,
         { ...authHeaders, data: { userId } }
       );
-<<<<<<< HEAD
       setSelectedClub({...selectedClub, members: selectedClub.members.filter(m => m.userId !== userId) });
       setClubs(clubs.map(c => c._id === res.data.club._id ? { ...c, members: c.members.filter(m => m.userId !== userId) } : c));
-=======
-      setSelectedClub(res.data.club);
-      setClubs(clubs.map(c => c._id === res.data.club._id ? res.data.club : c));
->>>>>>> origin/master
     } catch (err) {
       console.error("Error removing member:", err.response?.data || err);
     }
@@ -178,15 +160,9 @@ const ClubManagement = () => {
               selectedClub.members.map((m, i) => (
                 <div key={i} className="member-item">
                   <span>
-<<<<<<< HEAD
                     {m.name} ({m.email}) - {m.role}
                   </span>
                   <button className="btn-danger" onClick={() => handleRemoveMember(m.userId)}>Remove</button>
-=======
-                    {m.userId?.name} ({m.userId?.email}) - {m.role}
-                  </span>
-                  <button className="btn-danger" onClick={() => handleRemoveMember(m.userId?._id)}>Remove</button>
->>>>>>> origin/master
                 </div>
               ))
             )}
