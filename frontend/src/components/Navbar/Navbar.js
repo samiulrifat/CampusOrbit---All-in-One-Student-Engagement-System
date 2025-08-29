@@ -162,6 +162,13 @@ const Navbar = () => {
                   >
                     Announcements
                   </Link>
+                  <Link
+                    to='/notifications'
+                    className="navbar-link"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Notifications
+                  </Link>
                 </>
               )}
 

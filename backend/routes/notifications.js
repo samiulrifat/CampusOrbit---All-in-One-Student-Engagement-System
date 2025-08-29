@@ -23,6 +23,18 @@ router.get('/', verifyToken, async (req, res) => {
   }
 });
 
+// create notification
+router.post('/', verifyToken, async (req, res) => {
+  try {
+    const notification = new Notification(req.body);
+    await notification.save();
+    res.status(201).json(notification);
+  } catch (e) {
+    console.error('notifications POST error:', e);
+    res.status(500).json({ error: 'Failed to create notification' });
+  }
+});
+
 router.patch('/:id/read', verifyToken, async (req, res) => {
   await Notification.updateOne(
     { _id: req.params.id, user: req.user.userId },
