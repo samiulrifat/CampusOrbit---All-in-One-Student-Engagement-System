@@ -1,132 +1,171 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../context/AuthProvider';
-import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { createMeeting as apiCreateMeeting } from '../../api/clubApi';
 import './ScheduleMeeting.css';
 
-function ScheduleMeeting() {
-  const { user, loading, token } = useAuth();
+const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:5000';
 
+export default function ScheduleMeeting() {
+  const { user, loading, token } = useAuth();
+  const [clubs, setClubs] = useState([]); // array of club objects or clubId strings (cached)
+  const [selectedClub, setSelectedClub] = useState('');
   const [title, setTitle] = useState('');
   const [agenda, setAgenda] = useState('');
   const [location, setLocation] = useState('');
   const [scheduledAt, setScheduledAt] = useState('');
-  const [clubId, setClubId] = useState('');
-  const [clubs, setClubs] = useState([]);
-
-  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const API_URL = "http://localhost:5000/api/clubs";
+  // render debug
+  console.debug('ScheduleMeeting render', { user, tokenPresent: !!token, clubs, selectedClub });
+
+  const fetchClubs = useCallback(async () => {
+    try {
+      const t = token || localStorage.getItem('token');
+      console.debug('fetchClubs: tokenPresent=', !!t);
+
+      // optimistic cached clubs from localStorage.user
+      try {
+        const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
+        if (storedUser && (storedUser.clubsJoined || storedUser.clubId)) {
+          const cached = storedUser.clubsJoined || (storedUser.clubId ? [storedUser.clubId] : []);
+          console.debug('fetchClubs: using cached clubs from localStorage', cached);
+          // only set if we don't already have objects from API
+          if (!clubs.length) setClubs(cached);
+        }
+      } catch (err) {
+        console.debug('fetchClubs: no valid stored user', err);
+      }
+
+      if (!t) {
+        console.warn('fetchClubs: no token, skipping API call');
+        return;
+      }
+
+      const res = await axios.get(`${API_BASE}/api/clubs/user`, {
+        headers: { Authorization: `Bearer ${t}` },
+      });
+
+      if (res && res.status === 200) {
+        setClubs(res.data || []);
+        console.debug('fetchClubs: loaded clubs from API', res.data);
+      } else {
+        console.warn('fetchClubs: unexpected status', res.status, res.data);
+        setClubs(prev => (Array.isArray(prev) ? prev : []));
+      }
+    } catch (err) {
+      console.error('fetchClubs failed', err?.response?.status, err?.response?.data || err.message);
+      if (err?.response?.status === 401 || err?.response?.status === 403) {
+        setClubs([]);
+        setError('Not authenticated. Please login again.');
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
   useEffect(() => {
-    // Fetch all clubs for club selection dropdown
-    fetch('http://localhost:5000/api/clubs')
-      .then(res => res.json())
-      .then(setClubs)
-      .catch(() => setClubs([]));
-  }, []);
+    if (loading) return;
+    fetchClubs();
+  }, [loading, fetchClubs]);
 
+  // tolerant handler: works with both form submit event and manual onClick()
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMessage('');
+    if (e && e.preventDefault) e.preventDefault();
+    console.debug('handleSubmit start', { selectedClub, title, scheduledAt, user, tokenPresent: !!token });
     setError('');
+    setMessage('');
+    setIsSubmitting(true);
 
-    if (!clubId) {
-      setError('Please select a club');
+    const t = token || localStorage.getItem('token');
+    if (!t || !user) {
+      setError('Invalid user, please login');
+      console.warn('ScheduleMeeting: missing user/token', { user, token: !!token });
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!selectedClub || !title || !scheduledAt) {
+      setError('Please fill required fields');
+      setIsSubmitting(false);
       return;
     }
 
     try {
-      const res = await axios.post('http://localhost:5000/api/meetings', {
-        clubId,
-        organizerId: user._id,
-        title,
-        agenda,
-        location,
-        scheduledAt,
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      setMessage('Meeting scheduled successfully!');
-      setTitle('');
-      setAgenda('');
-      setLocation('');
-      setScheduledAt('');
-      setClubId('');
+      const payload = { title, agenda, location, scheduledAt: new Date(scheduledAt).toISOString() };
+      console.debug('POST payload', { url: `${API_BASE}/api/meetings/${selectedClub}`, payload });
+      const res = await apiCreateMeeting(selectedClub, payload, t);
+      console.debug('createMeeting response', res?.data);
+      setMessage('Meeting scheduled');
+      setTitle(''); setAgenda(''); setLocation(''); setScheduledAt(''); setSelectedClub('');
+      setIsSubmitting(false);
     } catch (err) {
-      setError(err.response?.data?.error || 'Something went wrong');
+      console.error('create meeting error', err);
+      setError(err.response?.data?.message || err.response?.data?.error || 'Failed to create meeting');
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="schedule-page">
-      <div className="schedule-card">
-        <h2>Schedule a Meeting</h2>
-        <div className="meeting-buttons">
-          <Link to="/schedule-meeting" className="btn-schedule">Schedule Meeting</Link>
-          <Link to="/meetings" className="btn-meeting">Meetings</Link>
-        </div>
-        <form onSubmit={handleSubmit}>
+      <div className="schedule-card" role="region" aria-labelledby="schedule-heading">
+        <h2 id="schedule-heading">Schedule Meeting</h2>
+
+        {error && <div className="error-msg" role="alert">{error}</div>}
+        {message && <div className="success-msg" role="status">{message}</div>}
+
+        <form onSubmit={handleSubmit} aria-describedby="schedule-help">
           <div className="form-group">
-            <label>Select Club</label>
-            <select value={clubId} onChange={e => setClubId(e.target.value)} required>
-              <option value="">-- Select Club --</option>
-              {clubs.map(c => (
-                <option key={c._id} value={c._id}>{c.name}</option>
-              ))}
+            <label htmlFor="club-select">Club</label>
+            <select
+              id="club-select"
+              value={selectedClub}
+              onChange={e => setSelectedClub(e.target.value)}
+            >
+              <option value="">Select club</option>
+              {clubs.map((c) => {
+                const id = (typeof c === 'string') ? c : (c._id || c.id);
+                const name = (typeof c === 'string') ? c : (c.name || c.title || c.clubName || id);
+                return <option key={id} value={id}>{name}</option>;
+              })}
             </select>
           </div>
 
           <div className="form-group">
-            <label>Meeting Title</label>
-            <input
-              type="text"
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              placeholder="Enter meeting title"
-              required
-            />
+            <label htmlFor="title-input">Title</label>
+            <input id="title-input" value={title} onChange={e => setTitle(e.target.value)} />
           </div>
 
           <div className="form-group">
-            <label>Agenda</label>
-            <textarea
-              value={agenda}
-              onChange={e => setAgenda(e.target.value)}
-              placeholder="Enter meeting agenda"
-            />
+            <label htmlFor="agenda-input">Agenda</label>
+            <textarea id="agenda-input" value={agenda} onChange={e => setAgenda(e.target.value)} />
           </div>
 
           <div className="form-group">
-            <label>Location / Link</label>
-            <input
-              type="text"
-              value={location}
-              onChange={e => setLocation(e.target.value)}
-              placeholder="Enter physical location or online link"
-            />
+            <label htmlFor="location-input">Location</label>
+            <input id="location-input" value={location} onChange={e => setLocation(e.target.value)} />
           </div>
 
           <div className="form-group">
-            <label>Date & Time</label>
-            <input
-              type="datetime-local"
-              value={scheduledAt}
-              onChange={e => setScheduledAt(e.target.value)}
-              required
-            />
+            <label htmlFor="datetime-input">Date & Time</label>
+            <input id="datetime-input" type="datetime-local" value={scheduledAt} onChange={e => setScheduledAt(e.target.value)} />
           </div>
 
-          <button type="submit" className="schedule-btn">Schedule Meeting</button>
+          <button
+            type="submit"
+            className="schedule-btn"
+            onClick={() => handleSubmit()}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Scheduling...' : 'Schedule'}
+          </button>
+
+          <p id="schedule-help" style={{ fontSize: 12, color: '#666', marginTop: 8 }}>
+            Meetings are visible to club members. You must be logged in as an officer to create.
+          </p>
         </form>
-
-        {error && <p className="error-msg">{error}</p>}
-        {message && <p className="success-msg">{message}</p>}
       </div>
     </div>
   );
 }
-
-export default ScheduleMeeting;

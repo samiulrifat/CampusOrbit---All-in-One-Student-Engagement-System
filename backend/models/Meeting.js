@@ -1,15 +1,18 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const Meeting = require('../models/Meeting');
 const { verifyToken, requireOfficer, isClubMember } = require('../middleware/auth');
 
-// Create a new meeting - only officers/admins of the club can create
-router.post('/', verifyToken, requireOfficer, async (req, res) => {
+// Create a new meeting (officer only) - clubId passed as URL param
+router.post('/:clubId', verifyToken, requireOfficer, async (req, res) => {
   try {
-    const { clubId, organizerId, title, agenda, location, scheduledAt } = req.body;
+    const { clubId } = req.params;
+    const { organizerId, title, agenda, location, scheduledAt } = req.body;
 
-    if (!clubId || !organizerId || !title || !scheduledAt) {
-      return res.status(400).json({ error: 'Required fields missing' });
+    // Validate required fields
+    if (!mongoose.isValidObjectId(clubId) || !organizerId || !title || !scheduledAt) {
+      return res.status(400).json({ error: 'Required fields missing or invalid' });
     }
 
     const meeting = new Meeting({
@@ -30,11 +33,17 @@ router.post('/', verifyToken, requireOfficer, async (req, res) => {
   }
 });
 
-// Get meetings for a club - only club members can view
+// Get meetings for a club (club member only)
 router.get('/:clubId', verifyToken, isClubMember, async (req, res) => {
   try {
     const { clubId } = req.params;
+
+    if (!mongoose.isValidObjectId(clubId)) {
+      return res.status(400).json({ error: 'Invalid club ID' });
+    }
+
     const meetings = await Meeting.find({ clubId }).populate('organizerId', 'name email');
+
     res.json(meetings);
   } catch (error) {
     console.error('Error fetching meetings:', error);
@@ -42,10 +51,14 @@ router.get('/:clubId', verifyToken, isClubMember, async (req, res) => {
   }
 });
 
-// Send invites - only officers/admins (marks invitationsSent true)
+// Send invites (officer only)
 router.post('/:meetingId/invite', verifyToken, requireOfficer, async (req, res) => {
   try {
     const { meetingId } = req.params;
+
+    if (!mongoose.isValidObjectId(meetingId)) {
+      return res.status(400).json({ error: 'Invalid meeting ID' });
+    }
 
     const meeting = await Meeting.findById(meetingId);
     if (!meeting) return res.status(404).json({ error: 'Meeting not found' });
@@ -64,11 +77,15 @@ router.post('/:meetingId/invite', verifyToken, requireOfficer, async (req, res) 
   }
 });
 
-// Mark attendance for a meeting - user confirms own attendance
+// Mark attendance (authenticated user)
 router.post('/:meetingId/attend', verifyToken, async (req, res) => {
   try {
     const { meetingId } = req.params;
     const { userId } = req.body;
+
+    if (!mongoose.isValidObjectId(meetingId)) {
+      return res.status(400).json({ error: 'Invalid meeting ID' });
+    }
 
     if (!userId) return res.status(400).json({ error: 'User ID is required' });
 

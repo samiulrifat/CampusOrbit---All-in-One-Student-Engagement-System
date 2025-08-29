@@ -1,94 +1,70 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const Meeting = require('../models/Meeting');
-const { verifyToken, requireOfficer, isClubMember } = require('../middleware/auth');
 
-// Create a new meeting (officer only)
-router.post('/', verifyToken, requireOfficer, async (req, res) => {
-  try {
-    const { clubId, organizerId, title, agenda, location, scheduledAt } = req.body;
+// load auth module and destructure
+const authExports = require('../middleware/auth');
+const { verifyToken, requireOfficer, isClubMember } = authExports || {};
 
-    if (!clubId || !organizerId || !title || !scheduledAt) {
-      return res.status(400).json({ error: 'Required fields missing' });
+// safe wrapper to avoid express calling undefined.apply
+function safeMiddleware(fn, name) {
+  return (req, res, next) => {
+    if (typeof fn !== 'function') {
+      console.error(`MISSING MIDDLEWARE: ${name} (type=${typeof fn})`);
+      return res.status(500).json({ error: 'Server error', message: `Missing middleware: ${name}` });
     }
+    try {
+      return fn(req, res, next);
+    } catch (err) {
+      console.error(`Error in middleware ${name}:`, err);
+      return res.status(500).json({ error: 'Server error', message: `Middleware error: ${name}` });
+    }
+  };
+}
 
-    const meeting = new Meeting({
-      clubId,
-      organizerId,
-      title,
-      agenda,
-      location,
-      scheduledAt,
-    });
+// wrapped middleware to attach to routes
+const vVerifyToken = safeMiddleware(verifyToken, 'verifyToken');
+const vRequireOfficer = safeMiddleware(requireOfficer, 'requireOfficer');
+const vIsClubMember = safeMiddleware(isClubMember, 'isClubMember');
 
-    await meeting.save();
-
-    res.status(201).json({ message: 'Meeting scheduled successfully', meeting });
-  } catch (error) {
-    console.error('Error scheduling meeting:', error);
-    res.status(500).json({ error: 'Server error' });
-  }
+// debug log — will show in server console on start
+console.log('meetings route auth types ->', {
+  verifyToken: typeof verifyToken,
+  requireOfficer: typeof requireOfficer,
+  isClubMember: typeof isClubMember,
+  vVerifyToken: typeof vVerifyToken,
+  vRequireOfficer: typeof vRequireOfficer,
+  vIsClubMember: typeof vIsClubMember
 });
 
-// Get meetings for a club (club member only)
-router.get('/:clubId', verifyToken, isClubMember, async (req, res) => {
-  try {
-    const { clubId } = req.params;
-
-    const meetings = await Meeting.find({ clubId }).populate('organizerId', 'name email');
-
-    res.json(meetings);
-  } catch (error) {
-    console.error('Error fetching meetings:', error);
-    res.status(500).json({ error: 'Server error' });
-  }
+// TEMP: debug route to verify reachability from frontend
+router.post('/debug/:clubId', (req, res) => {
+  console.log('[meetings debug] received debug POST', {
+    url: req.originalUrl,
+    params: req.params,
+    body: req.body,
+    headers: {
+      authorization: req.headers.authorization ? 'present' : 'missing',
+    },
+    time: new Date().toISOString(),
+  });
+  return res.status(200).json({ ok: true, msg: 'meetings debug reached' });
 });
 
-// Send invites (officer only)
-router.post('/:meetingId/invite', verifyToken, requireOfficer, async (req, res) => {
-  try {
-    const { meetingId } = req.params;
-
-    const meeting = await Meeting.findById(meetingId);
-    if (!meeting) return res.status(404).json({ error: 'Meeting not found' });
-
-    if (meeting.invitationsSent) {
-      return res.status(400).json({ error: 'Invitations already sent' });
-    }
-
-    meeting.invitationsSent = true;
-    await meeting.save();
-
-    res.json({ message: 'Invitations sent successfully' });
-  } catch (error) {
-    console.error('Error sending invites:', error);
-    res.status(500).json({ error: 'Server error' });
-  }
+// Create meeting (club_admin)
+router.post('/:clubId', vVerifyToken, vRequireOfficer, async (req, res) => {
+  // ...existing handler code...
 });
 
-// Mark attendance (authenticated user)
-router.post('/:meetingId/attend', verifyToken, async (req, res) => {
-  try {
-    const { meetingId } = req.params;
-    const { userId } = req.body;
+// Get all meetings for a club (members can view)
+router.get('/club/:clubId', vVerifyToken, vIsClubMember, async (req, res) => {
+  // ...existing handler code...
+});
 
-    if (!userId) return res.status(400).json({ error: 'User ID is required' });
-
-    const meeting = await Meeting.findById(meetingId);
-    if (!meeting) return res.status(404).json({ error: 'Meeting not found' });
-
-    if (meeting.attendees.includes(userId)) {
-      return res.status(400).json({ error: 'Attendance already recorded' });
-    }
-
-    meeting.attendees.push(userId);
-    await meeting.save();
-
-    res.json({ message: 'Attendance recorded successfully' });
-  } catch (error) {
-    console.error('Error recording attendance:', error);
-    res.status(500).json({ error: 'Server error' });
-  }
+// Get single meeting
+router.get('/:meetingId', vVerifyToken, vIsClubMember, async (req, res) => {
+  // ...existing handler code...
 });
 
 module.exports = router;
