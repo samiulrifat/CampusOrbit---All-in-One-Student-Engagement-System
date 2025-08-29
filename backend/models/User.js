@@ -5,7 +5,11 @@ const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   passwordHash: { type: String, required: true },
+<<<<<<< HEAD
   role: { type: String, enum: ['student', 'club_admin', 'superAdmin'], default: 'student' },
+=======
+  role: { type: String, enum: ['student', 'clubAdmin', 'superAdmin'], default: 'student' },
+>>>>>>> origin/master
   
   // Add this field:
   clubsJoined: [
