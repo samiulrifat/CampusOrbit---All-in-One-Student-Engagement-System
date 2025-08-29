@@ -44,7 +44,7 @@ async function requireOfficer(req, res, next) {
 
     // otherwise check membership role
     const member = club.members.find(m => String(m.userId) === String(req.user.userId));
-    if (member && (member.role === 'admin' || member.role === 'officer')) return next();
+    if (member && (member.role === 'club_admin' || member.role === 'officer')) return next();
 
     return res.status(403).json({ error: 'Access denied: not club admin' });
   } catch (err) {

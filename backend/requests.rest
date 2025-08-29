@@ -4,6 +4,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIwN
 ###
 GET http://localhost:5000/api/clubs/user
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIwNWM2MTEzMDI3MjU4OWFlYTkwOGQiLCJyb2xlIjoiY2x1Yl9hZG1pbiIsImlhdCI6MTc1NjQxOTQ5NywiZXhwIjoxNzU2NTA1ODk3fQ.Ey-CrqpC2dEOA56OKI2XmokwmeNTOm56v_67umCeHPM
+###
+POST http://localhost:5000/api/clubs/user
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGIwNWM2MTEzMDI3MjU4OWFlYTkwOGQiLCJyb2xlIjoiY2x1Yl9hZG1pbiIsImlhdCI6MTc1NjQxOTQ5NywiZXhwIjoxNzU2NTA1ODk3fQ.Ey-CrqpC2dEOA56OKI2XmokwmeNTOm56v_67umCeHPM
+Content-Type: application/json
+
+{
+    "role": "member",
+    "userId": "68b05d2b130272589aea90aa",
+    "clubId": "68b09872e05530585f80e30b"
+}
 
 ###
 GET http://localhost:5000/api/announcements
