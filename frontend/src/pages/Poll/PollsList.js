@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './PollsList.css';
+import { fetchPolls as apiFetchPolls, votePoll as apiVotePoll } from '../../api/clubApi';
 
 function PollsList() {
   const [polls, setPolls] = useState([]);
@@ -7,52 +8,39 @@ function PollsList() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user) {
-      setClubId(user.clubId);
-      fetchPolls(user.clubId);
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    const token = localStorage.getItem('token');
+    if (user && token) {
+      const id = user.clubId || (user.clubsJoined && user.clubsJoined[0]);
+      if (id) {
+        setClubId(id);
+        apiFetchPolls(id, token).then(r => setPolls(r.data || [])).catch(() => setPolls([]));
+      }
     }
   }, []);
-
-  const fetchPolls = async (clubId) => {
-    try {
-      const res = await fetch(`http://localhost:5000/api/polls/${clubId}`);
-      const data = await res.json();
-      setPolls(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
+ 
   const vote = async (pollId, optionIndex) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/polls/${pollId}/vote`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ optionIndex })
-      });
-      const data = await res.json();
-      setMessage(data.message || data.error);
-      fetchPolls(clubId);
+      const token = localStorage.getItem('token');
+      const res = await apiVotePoll(pollId, { optionIndex }, token);
+      setMessage(res.data.message || 'Voted');
+      // refresh
+      const userToken = localStorage.getItem('token');
+      apiFetchPolls(clubId, userToken).then(r => setPolls(r.data || [])).catch(() => {});
     } catch (err) {
       console.error(err);
     }
   };
-
+ 
   const closePoll = async (pollId) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/polls/${pollId}/close`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      const data = await res.json();
-      setMessage(data.message || data.error);
-      fetchPolls(clubId);
+      // if your backend supports closing polls, call here. Otherwise show message.
+      setMessage('Close poll not implemented on server.');
     } catch (err) {
       console.error(err);
     }
   };
-
+ 
   return (
     <div className="polls-page">
       <div className="polls-card">
@@ -67,20 +55,15 @@ function PollsList() {
               <ul>
                 {poll.options.map((opt, idx) => (
                   <li key={idx}>
-                    {opt.text} — {opt.votes} votes
-                    {poll.isOpen && (
-                      <button 
-                        className="vote-btn" 
-                        onClick={() => vote(poll._id, idx)}
-                      >
-                        Vote
-                      </button>
+                    {opt.text} — {(opt.votes || []).length} votes
+                    {(!poll.expiresAt || new Date(poll.expiresAt) > new Date()) && (
+                      <button className="vote-btn" onClick={() => vote(poll._id, idx)}>Vote</button>
                     )}
                   </li>
                 ))}
               </ul>
-              {poll.isOpen ? (
-                <button className="close-btn" onClick={() => closePoll(poll._id)}>Close Poll</button>
+              {(!poll.expiresAt || new Date(poll.expiresAt) > new Date()) ? (
+                <p className="open-msg">Open</p>
               ) : (
                 <p className="closed-msg">Poll Closed</p>
               )}
@@ -91,5 +74,5 @@ function PollsList() {
     </div>
   );
 }
-
+ 
 export default PollsList;

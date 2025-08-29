@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { fetchMeetings } from '../../api/clubApi';
 import { useAuth } from '../../context/AuthProvider';
 import { Link } from 'react-router-dom';
 import './MeetingsList.css';
@@ -20,13 +21,8 @@ function MeetingsList() {
         let allMeetings = [];
 
         for (const club of user.clubsJoined || []) {
-          const res = await fetch(`http://localhost:5000/api/meetings/${club}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (res.ok) {
-            const data = await res.json();
-            allMeetings = allMeetings.concat(data);
-          }
+          const res = await fetchMeetings(club, token);
+          allMeetings = allMeetings.concat(res.data || []);
         }
 
         setMeetings(allMeetings);
@@ -47,7 +43,7 @@ function MeetingsList() {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      setMessage(data.message || data.error);
+      setMessage(data.message || data.error || 'Invite API response');
       // Refresh meetings list after sending invites
       // (Optionally, call fetchAllMeetings here if lifted)
     } catch (err) {
@@ -66,7 +62,7 @@ function MeetingsList() {
         body: JSON.stringify({ userId: user._id }),
       });
       const data = await res.json();
-      setMessage(data.message || data.error);
+      setMessage(data.message || data.error || 'Attend API response');
       // Optionally refresh meetings list after marking attendance
     } catch (err) {
       console.error(err);
