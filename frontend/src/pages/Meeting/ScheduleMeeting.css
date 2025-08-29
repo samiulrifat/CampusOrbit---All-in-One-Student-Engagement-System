@@ -1,0 +1,117 @@
+
+.schedule-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f0f4ff, #ffffff);
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  padding: 2rem 1rem;
+}
+
+.schedule-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(14px);
+  border-radius: 1rem;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+  padding: 2rem;
+  width: 100%;
+  max-width: 480px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.schedule-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.12);
+}
+
+.schedule-logo {
+  display: block;
+  margin: 0 auto 1rem auto;
+  height: 80px;
+}
+
+.schedule-card h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #4f46e5, #ffa55c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+label {
+  font-weight: 600;
+  color: #193043;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(6px);
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+input:focus, textarea:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 8px rgba(79,70,229,0.2);
+  outline: none;
+}
+
+textarea {
+  width: 93%;
+  min-height: 50px;
+  max-height: 100px;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(6px);
+  resize: vertical;
+  overflow-y: auto;
+}
+
+.schedule-btn {
+  width: 100%;
+  padding: 0.8rem;
+  background: linear-gradient(135deg, #4f46e5, #ffa55c);
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.schedule-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.error-msg {
+  color: #dc2626;
+  margin-top: 1rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.success-msg {
+  color: #16a34a;
+  margin-top: 1rem;
+  text-align: center;
+  font-weight: 500;
+}

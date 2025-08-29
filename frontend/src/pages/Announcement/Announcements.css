@@ -1,0 +1,180 @@
+/* ===== PAGE WRAPPER ===== */
+.announcements-page {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f0f4ff, #ffffff);
+  min-height: 100vh;
+}
+
+/* ===== MAIN CARD ===== */
+.announcements-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border-radius: 1rem;
+  padding: 2rem 2.5rem;
+  max-width: 900px;
+  width: 100%;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.announcements-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.12);
+}
+
+.announcements-card h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-align: center;
+  background: linear-gradient(135deg, #4f46e5, #ffa55c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ===== CLUB SELECTION ===== */
+.club-selection {
+  margin-bottom: 2rem;
+}
+
+.club-selection h2 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.club-item {
+  background: #f9fafb;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s;
+}
+
+.club-item:hover {
+  background: #eef2ff;
+  border-color: #4f46e5;
+}
+
+.club-item.selected {
+  background: #4f46e5;
+  color: white;
+  border-color: #4f46e5;
+  font-weight: 600;
+}
+
+/* ===== ANNOUNCEMENT PANEL ===== */
+.announcement-panel {
+  margin-top: 2rem;
+}
+
+.announcement-panel h2 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  color: #444;
+}
+
+/* ===== FORM ===== */
+.announcement-form {
+  margin-bottom: 1.5rem;
+}
+
+.announcement-form input,
+.announcement-form textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #d1d5db;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.announcement-form input:focus,
+.announcement-form textarea:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 8px rgba(79,70,229,0.2);
+}
+
+.announcement-form button {
+  width: 100%;
+  height: 48px;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #4f46e5, #ffa55c);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.announcement-form button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.announcement-form button:disabled {
+  background: #a0c6f8;
+  cursor: not-allowed;
+}
+
+/* ===== ANNOUNCEMENT LIST ===== */
+.announcement-item {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.announcement-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+}
+
+.announcement-item h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.announcement-item p {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 0 0 0.75rem 0;
+  color: #444;
+}
+
+.announcement-item small {
+  display: block;
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+  font-style: italic;
+}
+
+/* Delete button */
+.delete-btn {
+  background: transparent;
+  border: none;
+  color: #e74c3c;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: 0.5rem;
+  transition: color 0.2s;
+}
+
+.delete-btn:hover {
+  color: #c0392b;
+}

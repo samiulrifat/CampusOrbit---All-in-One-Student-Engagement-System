@@ -1,0 +1,59 @@
+/* ===== PAGE WRAPPER ===== */
+.achievements-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0f4ff, #ffffff);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 1rem;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+
+/* ===== MAIN CARD ===== */
+.achievements-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  padding: 2rem;
+  width: 100%;
+  max-width: 900px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.achievements-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.12);
+}
+
+/* ===== HEADING ===== */
+.achievements-card h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #4f46e5, #ffa55c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-align: center;
+}
+
+/* ===== SECTION WRAPPER ===== */
+.achievements-section {
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .achievements-card {
+    padding: 1.2rem;
+  }
+  .achievements-card h1 {
+    font-size: 1.5rem;
+  }
+}

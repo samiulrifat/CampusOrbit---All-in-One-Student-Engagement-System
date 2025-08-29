@@ -1,0 +1,69 @@
+/* ===== EVENTS PAGE ===== */
+.events-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 90vh;
+  background: linear-gradient(135deg, #f0f4ff, #ffffff);
+  padding: 2rem 1rem;
+}
+
+/* Glass card for form & list */
+.events-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border-radius: 1rem;
+  padding: 2rem 2.5rem;
+  max-width: 800px;
+  width: 100%;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.events-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.12);
+}
+
+/* Heading */
+.events-card h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #4f46e5, #ffa55c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-align: center;
+}
+
+/* Club select */
+.club-select {
+  display: block;
+  margin: 1rem 0 1.5rem;
+  font-weight: 500;
+}
+
+.club-select select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #d1d5db;
+  outline: none;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.club-select select:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 8px rgba(79,70,229,0.2);
+}
+
+/* Error message */
+.error-msg {
+  color: #dc2626;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  text-align: center;
+}

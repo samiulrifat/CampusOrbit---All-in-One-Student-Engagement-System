@@ -1,0 +1,198 @@
+
+.meetings-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0f4ff, #ffffff);
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+
+.meetings-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(14px);
+  border-radius: 1rem;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+  padding: 2rem;
+  width: 100%;
+  max-width: 680px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.meetings-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.12);
+}
+
+.meetings-logo {
+  height: 70px;
+  display: block;
+  margin: 0 auto 1rem;
+}
+
+.meetings-card h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #4f46e5, #ffa55c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-align: center;
+}
+
+.meeting-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.btn-meeting,
+.btn-schedule {
+  padding: 0.75rem 1.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.btn-meeting {
+  background: linear-gradient(135deg, #4f46e5, #ffa55c);
+  color: #fff;
+}
+
+.btn-meeting:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(138, 43, 226, 0.4);
+}
+
+.btn-schedule {
+  background: rgba(79, 70, 229, 0.1);
+  color: #4f46e5;
+}
+
+.btn-schedule:hover {
+  background: rgba(190, 190, 190, 0.527);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(255, 255, 255, 0.2);
+}
+
+.club-input {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.club-input input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  height: 48px;
+  border-radius: 0.75rem;
+  border: 1px solid #d1d5db;
+  outline: none;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.club-input input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 8px rgba(79,70,229,0.2);
+}
+
+.club-input button {
+  height: 48px;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #4f46e5, #ffa55c);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.club-input button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.meeting-item {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(8px);
+  border-radius: 0.75rem;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.meeting-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+}
+
+.meeting-item h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: #193043;
+}
+
+.meeting-item p {
+  margin: 0.2rem 0;
+  color: #333;
+}
+
+.meeting-actions {
+  margin-top: 0.8rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.invite-btn {
+  background: linear-gradient(135deg, #4f46e5, #ffa55c);
+  border: none;
+  height: 40px;
+  padding: 0 1rem;
+  border-radius: 0.75rem;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.invite-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.attend-btn {
+  background: linear-gradient(135deg, #28a745, #4ade80);
+  border: none;
+  height: 40px;
+  padding: 0 1rem;
+  border-radius: 0.75rem;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.attend-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.info-msg {
+  color: #193043;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}

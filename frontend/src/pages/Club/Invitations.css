@@ -1,0 +1,75 @@
+/* Invitations.css */
+
+.invitations-page {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.invitations-page h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 2rem;
+}
+
+.invitations-list {
+  list-style: none;
+  padding: 0;
+}
+
+.invitations-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.invitations-list li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+}
+
+.invitations-list li span {
+  font-size: 1rem;
+  color: #555;
+}
+
+.invitations-list li button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.invitations-list li button:hover {
+  background-color: #45a049;
+}
+
+.invitations-list li button:disabled {
+  background-color: #a5d6a7;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .invitations-list li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .invitations-list li button {
+    margin-top: 10px;
+    width: 100%;
+  }
+}

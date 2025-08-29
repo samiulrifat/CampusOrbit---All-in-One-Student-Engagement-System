@@ -1,0 +1,167 @@
+.event-manager {
+  max-width: 800px;
+  margin: 2rem auto;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.event-manager h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #4f46e5, #a855f7);
+  -webkit-background-clip: text;
+  color: transparent;
+  text-align: center;
+}
+
+/* Club selector */
+.event-manager select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+  transition: border 0.3s;
+}
+
+.event-manager select:focus {
+  border-color: #4f46e5;
+}
+
+/* Event form */
+.event-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 1.5rem 2rem;
+  background: rgba(255,255,255,0.9);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+
+.input-field {
+  padding: 10px 14px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  outline: none;
+  transition: border 0.3s, box-shadow 0.3s;
+}
+
+.input-field:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 8px rgba(79,70,229,0.3);
+}
+
+.save-button {
+  padding: 10px 24px;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #4f46e5, #a855f7);
+  color: #fff;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.save-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(79,70,229,0.3);
+}
+
+.save-button:active {
+  transform: translateY(0);
+}
+
+/* Event list cards */
+.event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.event-card {
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(6px);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-left: 5px solid #4f46e5;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.event-card h3 {
+  font-size: 1.5rem;
+  color: #4f46e5;
+  margin: 0 0 8px 0;
+}
+
+.event-card p {
+  font-size: 1rem;
+  color: #444;
+  margin: 0;
+}
+
+.event-card img {
+  width: 100px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.event-card img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 18px rgba(79,70,229,0.3);
+}
+
+/* Lightbox buttons */
+.lightbox-btn {
+  position: absolute;
+  background: #4f46e5;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(79,70,229,0.4);
+}
+
+.lightbox-btn:hover {
+  opacity: 0.85;
+}
+
+.lightbox-btn.close { top: 20px; right: 20px; }
+.lightbox-btn.left { left: 30px; }
+.lightbox-btn.right { right: 30px; }
+
+/* Responsive */
+@media (max-width: 700px) {
+  .event-manager {
+    padding: 14px;
+  }
+  .event-card img {
+    width: 80px;
+    height: 60px;
+  }
+}

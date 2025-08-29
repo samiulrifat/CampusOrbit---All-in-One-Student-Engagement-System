@@ -1,0 +1,176 @@
+/* ===== CLUB MANAGEMENT PAGE ===== */
+.club-management-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0f4ff, #ffffff);
+  padding: 2rem 1rem;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  color: #193043;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Main heading */
+.club-management-page h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  background: linear-gradient(135deg, #4f46e5, #ffa55c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-align: center;
+}
+
+/* Glass card container */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 2rem;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.12);
+}
+
+/* Section headings */
+.glass-card h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #4f46e5, #ffa55c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glass-card h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 1.2rem 0 0.6rem;
+  color: #333;
+}
+
+/* Form row for create club */
+.form-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Inputs */
+.glass-card input[type="text"],
+.glass-card input[type="email"] {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  height: 48px;
+  border-radius: 0.75rem;
+  border: 1px solid #d1d5db;
+  outline: none;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.glass-card input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 8px rgba(79,70,229,0.2);
+}
+
+/* Buttons */
+.btn-primary {
+  height: 48px;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #4f46e5, #ffa55c);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.btn-danger {
+  background-color: #e74c3c;
+  border: none;
+  color: white;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.btn-danger:hover {
+  background-color: #c0392b;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border: none;
+  color: white;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.btn-success:hover {
+  background-color: #1e7e34;
+}
+
+/* Club list items */
+.club-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.club-item:last-child {
+  border-bottom: none;
+}
+
+.club-item span {
+  cursor: pointer;
+}
+
+.club-item.selected span {
+  font-weight: bold;
+  color: #4f46e5;
+}
+
+/* Member & invitation items */
+.member-item, .invitation-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.member-item:last-child, .invitation-item:last-child {
+  border-bottom: none;
+}
+
+/* Invite member row */
+.invite-member {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.invite-member input {
+  flex: 1;
+}

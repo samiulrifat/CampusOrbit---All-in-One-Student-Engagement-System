@@ -1,0 +1,307 @@
+/* Container for the event page */
+.container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem 2.5rem;
+  background-color: #f9fbfd; /* very light blue-gray */
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+  color: #2e3a59; /* dark blue-gray text */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+}
+
+/* Heading style */
+h1 {
+  margin-top: 0;
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: #2c3e50;
+  border-bottom: 3px solid #3498db; /* bright blue underline */
+  padding-bottom: 0.4rem;
+}
+
+/* Paragraph styles */
+p {
+  font-size: 1.1rem;
+  color: #4a5568;
+  margin-bottom: 1rem;
+}
+
+/* Labels and strong text */
+strong {
+  color: #34495e;
+  font-weight: 600;
+}
+
+/* Margin utilities */
+.mt-4 {
+  margin-top: 1.5rem;
+}
+
+.mt-5 {
+  margin-top: 3rem;
+}
+
+/* RSVP Button overrides */
+.btn {
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 0.6rem 1.3rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #3498db;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #2874a6;
+}
+
+.btn-primary:disabled {
+  background-color: #a0c6f8;
+  cursor: not-allowed;
+}
+
+.btn-danger {
+  background-color: #e74c3c;
+  color: white;
+  padding: 0.35rem 1rem;
+  font-size: 0.9rem;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: #c0392b;
+}
+
+.btn-sm {
+  padding: 0.3rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+.ml-2 {
+  margin-left: 0.5rem;
+}
+
+/* Attendee list */
+ul {
+  padding-left: 0;
+  list-style-type: none;
+  margin-top: 0.75rem;
+}
+
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background-color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 1.5px 5px rgba(50, 50, 93, 0.07);
+  margin-bottom: 0.9rem;
+  font-size: 1rem;
+  color: #2d3436;
+  transition: box-shadow 0.3s ease;
+}
+
+li:hover {
+  box-shadow: 0 4px 15px rgba(50, 50, 93, 0.1);
+}
+
+/* Attendee info */
+li span {
+  font-weight: 500;
+  color: #34495e;
+}
+
+/* Remove button */
+li button.btn-danger {
+  min-width: 75px;
+  text-align: center;
+}
+
+
+/* Notifications Bell */
+.notif-wrapper {
+  position: relative;
+}
+
+.bell {
+  position: relative;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  padding: 8px 12px;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.notif-dropdown {
+  position: absolute;
+  right: 0;
+  margin-top: 8px;
+  width: 340px;
+  max-height: 420px;
+  overflow: auto;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  z-index: 30;
+}
+
+.notif-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.notif-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.notif-list li {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.notif-list li.unread {
+  background: #f9fafb;
+}
+
+.notif-list li .title {
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: #2c3e50; /* slightly darker blue-gray */
+}
+
+.notif-list li .msg {
+  font-size: 0.92rem;
+  color: #4a5568; /* matches your paragraph color */
+}
+
+.notif-list li .actions {
+  margin-top: 6px;
+  display: flex;
+  gap: 12px;
+  font-size: 0.9rem;
+}
+
+.link {
+  background: none;
+  border: none;
+  color: #4f46e5; /* indigo-600 */
+  cursor: pointer;
+  padding: 0;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* Topbar adjustment if needed */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Sponsorship Request Form styling */
+.card {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #2e3a59;
+}
+
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+  font-weight: 700;
+  font-size: 1.8rem;
+}
+
+/* Form elements inside card */
+.card label {
+  font-weight: 600;
+  display: block;
+  margin-top: 1rem;
+  margin-bottom: 0.4rem;
+  color: #34495e;
+}
+
+.card input[type="text"],
+.card input[type="number"],
+.card textarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db; /* light gray */
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #2e3a59;
+  resize: vertical;
+}
+
+.card input[type="text"]:focus,
+.card input[type="number"]:focus,
+.card textarea:focus {
+  outline: none;
+  border-color: #3498db; /* bright blue focus */
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+.card button.btn-primary {
+  margin-top: 1.5rem;
+  font-weight: 700;
+  border-radius: 6px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  background-color: #3498db;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border: none;
+}
+
+.card button.btn-primary:hover:not(:disabled) {
+  background-color: #2874a6;
+}
+
+/* Status message for form submission */
+.hint {
+  margin-top: 0.8rem;
+  font-size: 1rem;
+  color: #34495e;
+  font-weight: 600;
+}
+
+/* Additional spacing for EventPage sections */
+.mt-5 > .card {
+  margin-bottom: 3rem;
+}
